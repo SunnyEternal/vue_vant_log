@@ -1,0 +1,72 @@
+<template>
+  <div>
+    <!-- 导航 -->
+    <van-nav-bar title="研发部工作日志"/>
+
+    <!-- 登录 -->
+    <van-form @submit="onSubmit">
+      <van-field
+        v-model="username"
+        name="username"
+        label="用户名"
+        placeholder="用户名"
+        :rules="[{ required: true, message: '请填写用户名' }]"
+      />
+      <van-field
+        v-model="password"
+        type="password"
+        name="password"
+        label="密码"
+        placeholder="密码"
+        :rules="[{ required: true, message: '请填写密码' }]"
+      />
+      <div class="btn-margin">
+        <van-button round block type="info" native-type="submit">提交</van-button>
+      </div>
+    </van-form>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      username: '',
+      password: '',
+
+      // !官方文档还有 校验规则，我没添加呢……
+    };
+  },
+  methods: {
+    onSubmit(values) {
+      // console.log('submit', values);
+      if (values.username === 'feifei' && values.password === '123') {
+        console.log('成功')
+        this.$router.push('/home');
+      }
+    },
+    // onClickLeft() {
+    //   Toast('返回');
+    // },
+    // onClickRight() {
+    //   Toast('按钮');
+    // },
+  },
+}
+</script>
+
+<style lang='less'>
+.van-nav-bar__content{
+  background-color: #1989fa;
+}
+.van-nav-bar__title{
+  color: #fff!important;
+}
+.van-form{
+  margin-top: 45%;
+}
+
+.btn-margin{
+  margin: 16px;
+}
+</style>
