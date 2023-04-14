@@ -9,6 +9,35 @@ import 'vant/lib/index.less';
 
 Vue.config.productionTip = false
 
+// Vue.dateFormat(function() {
+//   const dt = new Date()
+//   const y = dt.getFullYear();
+// 	let m = dt.getMonth() + 1;
+// 	m = m < 10 ? ('0' + m) : m;
+// 	let d = dt.getDate();
+// 	d = d < 10 ? ('0' + d) : d;
+//   return `${y}/${m}/${d}`
+// })
+
+Vue.prototype.$formatDate = function() {
+  const dt = new Date()
+  const y = dt.getFullYear();
+	let m = dt.getMonth() + 1;
+	m = m < 10 ? ('0' + m) : m;
+	let d = dt.getDate();
+	d = d < 10 ? ('0' + d) : d;
+  return `${y}/${m}/${d}`
+}
+
+Vue.prototype.$getDateBeforeSixDays = function() {
+  const today = new Date();
+  const sixDaysAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6);
+  const year = sixDaysAgo.getFullYear();
+  const month = String(sixDaysAgo.getMonth() + 1).padStart(2, '0');
+  const day = String(sixDaysAgo.getDate()).padStart(2, '0');
+  return `${year}, ${month}, ${day}`;
+};
+
 new Vue({
   router,
   render: h => h(App)

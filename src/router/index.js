@@ -2,6 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '../components/Login.vue'
 import Home from '../components/Home.vue'
+import List from '../components/List.vue'
+import Detail from '../components/Detail.vue'
 
 Vue.use(VueRouter)
 
@@ -14,6 +16,14 @@ Vue.use(VueRouter)
   {
     path: '/home',
     component: Home
+  },
+  {
+    path: '/list',
+    component: List
+  },
+  {
+    path: '/detail',
+    component: Detail
   }
   // {
   //   path: '/about',

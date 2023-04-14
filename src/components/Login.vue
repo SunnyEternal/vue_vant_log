@@ -28,6 +28,8 @@
 </template>
 
 <script>
+import { Toast } from 'vant';
+
 export default {
   data() {
     return {
@@ -41,16 +43,15 @@ export default {
     onSubmit(values) {
       // console.log('submit', values);
       if (values.username === 'feifei' && values.password === '123') {
-        console.log('成功')
-        this.$router.push('/home');
+        localStorage.setItem('username', 'feifei')
+        this.$router.push('/home')
+      } else if (values.username === 'admin' && values.password === '123') {
+        localStorage.setItem('username', 'admin')
+        this.$router.push('/home')
+      } else {
+        Toast('尚无登录权限，请联系管理员')
       }
     },
-    // onClickLeft() {
-    //   Toast('返回');
-    // },
-    // onClickRight() {
-    //   Toast('按钮');
-    // },
   },
 }
 </script>

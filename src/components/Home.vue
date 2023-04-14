@@ -1,15 +1,547 @@
 <template>
-  <div>
-    我是home页面
+  <div class="home-container">
+    <!-- 导航 -->
+    <van-nav-bar title="研发部工作日志" stop-circle-o @click-right="onClickRight">
+      <template #right>
+        <van-icon name="stop-circle-o" size="18" />
+      </template>
+    </van-nav-bar>
+
+    <!-- 展示区 -->
+    <!-- :show-confirm="false" 日历有快捷选择 -->
+    <div class="handle-field">
+      <div class="flex-cont">
+        <van-field readonly :label="username" :border="false" />
+        <van-field
+          readonly
+          clickable
+          name="calendar"
+          :value="date"
+          label="日历"
+          @click="showCalendar = true"
+        />
+      </div>
+      
+      <van-calendar v-model="showCalendar" @confirm="onConfirmDate" color="#1989fa" :min-date="minDate" :max-date="maxDate" :formatter="formatter" />
+    </div>
+
+    <div v-show="!finish">
+      <!-- 写好的日志 --> 
+      <div class="completed-log">
+        <van-swipe-cell class="handle-btns" v-for="(item) in logList" :key="item.id">
+          <van-cell-group>
+            <div class="logBox">
+              <div class="logTitle">
+                <h3>
+                  <span class="code">{{item.codeId}}</span> 
+                  {{item.title}}
+                </h3>
+                <span class="evaluate">{{item.module}}</span>
+              </div>
+              <div class="logDetail">
+                <p>{{item.detail}}</p>
+                <span class="time">{{item.time}}</span>
+              </div>
+            </div>
+          </van-cell-group>
+          <template #right>
+            <van-button square type="danger" text="删除" @click="deleteLogFun(item.id)" />
+            <van-button square type="info" text="编辑" @click="editLogFun(item)" />
+          </template>
+        </van-swipe-cell>
+      </div>
+
+      <!-- 操作区 -->
+      <div class="handle-main" v-show="!addBtnVisible">
+        <van-field
+          readonly
+          clickable
+          label="任务"
+          :value="task"
+          placeholder="选择任务"
+          @click="showTaskPicker = true"
+        />
+        <van-popup v-model="showTaskPicker" round position="bottom">
+          <van-picker
+            show-toolbar
+            :columns="taskSlots"
+            @cancel="showTaskPicker = false"
+            @confirm="onConfirmTask"
+          />
+        </van-popup>
+
+        <van-field
+          readonly
+          clickable
+          label="类型"
+          :value="type"
+          placeholder="选择类型"
+          @click="showTypePicker = true"
+        />
+        <van-popup v-model="showTypePicker" round position="bottom">
+          <van-picker
+            show-toolbar
+            :columns="typeSlots"
+            @cancel="showTypePicker = false"
+            @confirm="onConfirmType"
+          />
+        </van-popup>
+
+        <van-cell title="用时" value="内容">
+          <van-stepper v-model.number="time" step="0.5" min="0.5" max="12" default-value="2" @change="onChangeTime" disable-input theme="round" />
+        </van-cell>
+
+        <van-field
+          v-model="detail"
+          rows="1"
+          autosize
+          label="描述"
+          type="textarea"
+          placeholder="请填写事物描述"
+        />
+        <div class="btn-group">
+          <van-button type="info" plain size="small" @click="saveLogFun">保 存</van-button>
+          <van-button color="#ef4f4f" plain size="small" @click="cancelLogFun">取 消</van-button>
+        </div>
+      </div>
+
+      <div class="btn-group" v-show="addBtnVisible">
+        <van-button icon="plus" type="info" size="small" plain block @click="handleBtnFun">添加事物</van-button>
+      </div>
+
+      <div class="handle-mark">
+        <van-field
+          v-model="mark"
+          rows="1"
+          autosize
+          label="备注"
+          type="textarea"
+          placeholder="今日未处理开发工作"
+        />
+        <div class="btn-group">
+          <van-button type="info" block @click="submitLogFun">提 交</van-button>
+        </div>
+        
+      </div>
+    </div>
+
+    <div v-show="finish">
+      <van-empty description="日志已提交" />
+    </div>
+    
+
+    <!-- 底部导航 -->
+    <div>
+      <van-tabbar v-model="active">
+        <van-tabbar-item icon="records" to="/home">记录</van-tabbar-item>
+        <van-tabbar-item icon="completed" to="/list">日志列表</van-tabbar-item>
+      </van-tabbar>
+    </div>
+
   </div>
 </template>
 
 <script>
-export default {
+import { Toast, Dialog } from 'vant';
+import _ from 'lodash';
 
+export default {
+  data() {
+    return {
+      finish: false,
+      username: '',
+      date: this.$formatDate(),    // 默认日历显示当前日期，日历时间可修改
+      currDate: this.$formatDate(),// 当前日期 // !default-date 没写明白，去掉了
+      currDay: '',
+      minDate: new Date(this.$getDateBeforeSixDays()),
+      maxDate: new Date(),
+      showCalendar: false,
+
+      task: '',         // 选择任务
+      showTaskPicker: false,
+      rawTask: [],      // 任务原始数据
+
+      type: '',         // 选择类型            
+      showTypePicker: false,
+      typeSlots: [],    //? 类型原始数据
+
+      time: 1,          // 选择用时
+      value: 1,
+
+      active: 0,        // 底部选中导航
+
+      detail: '',       // 事物描述
+      mark: '',
+
+      formData: {       // 每一条日志
+        id: '',
+        codeId: '',
+        title: '',
+        module: '',
+        time: 1,
+        detail: ''
+      },
+      numId: 0,         // 给写好的日志生成 id
+
+      logList: [],      // 已写好的所有日志
+      addBtnVisible: false,// 是否显示添加【事物按钮】
+
+      weekLogs: {
+        month: 1,
+        sevenDayLog: []
+      },
+    };
+  },
+  created() {
+    this.username = localStorage.getItem('username')
+    this.getTaskFun()
+    this.getTypeFun()
+
+    this.getSevenDayDate()
+  },
+  mounted() {
+
+  },
+  computed: {
+    taskSlots() {
+      return this.addText(this.rawTask);
+    },
+    // logList() {
+    //   return this.addLogObject(this.arr);
+    // }
+  },
+  methods: {
+    // 退出
+    onClickRight() {
+      // Toast('退出');
+      Dialog.confirm({
+        message: '确定退出吗？',
+      }).then(() => {
+        this.$router.push('/login')
+      }).catch(() => {
+        console.log('取消退出')
+      });
+    },
+    // 在日历上选择日期
+    onConfirmDate(date) {
+      this.date = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+      const currDay = Number(this.date.split('/')[2])
+      console.log(currDay) // ! 注意字符串 和 数字 间的转换
+
+      const foundObj =  this.weekLogs.sevenDayLog.filter((obj) => obj.day === currDay);
+      this.finish = foundObj[0].todo
+      
+      this.showCalendar = false;
+    },
+    // 在日期上显示日志提交情况 // ! html 里没有传 day，但是方法里怎么可以用呢？
+    formatter(day) {
+      const month = day.date.getMonth() + 1;
+      const date = day.date.getDate();
+      console.log('month:', month)
+
+      if(this.weekLogs.month === month) {
+        this.weekLogs.sevenDayLog.forEach((item) => {
+          if (item.day === date) {
+            day.topInfo = item.text
+          }
+        })
+      }
+      return day;
+    },
+    // 获取过去一周日志提交情况，如：今天13号，获得7、8、9、10、11、12、13，七天的日志提交情况
+    getSevenDayDate() {
+      // const currDay = this.$formatDate().split('/')[2]
+      // const currDay = this.date.split('/')[2]
+      // console.log(currDay)
+      this.weekLogs = {
+        month: 4,
+        sevenDayLog: [{
+          day: 14,
+          todo: false,
+          text: '未提交'
+        },{
+          day: 13,
+          todo: false,
+          text: '未提交'
+        },
+        {
+          day: 12,
+          todo: false,
+          text: '未提交'
+        },
+        {
+          day: 11,
+          todo: true,
+          text: '完成'
+        },
+        {
+          day: 10,
+          todo: false,
+          text: '未提交'
+        },
+        {
+          day: 9,
+          todo: true,
+          text: '完成'
+        },
+        {
+          day: 8,
+          todo: true,
+          text: '完成'
+        }]
+      }
+      this.finish = this.weekLogs.sevenDayLog[0].todo
+    },
+    
+    // 获取 task 任务
+    getTaskFun() {
+      this.rawTask = [{
+        id: 1,
+        codeId: 1292,
+        title: '【中安星云】数据安全数据安全数据安全平台##V1.5.0功能开发',
+      },
+      {
+        id: 2,
+        codeId: 1294,
+        title: '【中安星云】数据安全平台##V1.7.0功能开发',
+      },
+      {
+        id: 3,
+        codeId: 1391,
+        title: '【中安星云】数据加密##V0.5.0功能开发',
+      }]
+    },
+    // 给 rawTask 数组数据添加【text】属性，用于 vant ui 绘制弹出选择列表
+    addText(arr) {
+      arr.forEach(function(obj) {
+        obj.text = `${obj.codeId}${obj.title}`;
+      });
+      return arr;
+    },
+
+    // 获取 type 类别
+    getTypeFun() {
+      // this.rawType
+      this.typeSlots = [{
+        id: 11,
+        text: '需求与目标管理'
+      },
+      {
+        id: 12,
+        text: '需求评估'
+      },
+      {
+        id: 13,
+        text: '需求分析'
+      },
+      {
+        id: 14,
+        text: '需求设计'
+      },
+      {
+        id: 15,
+        text: '版本规划'
+      }]
+    },
+
+    // 确认选择任务
+    onConfirmTask(value) {
+      // console.log(value)
+      this.task = value.text;
+      // ! 应该有更好的写法  赋值给 this.formData
+      
+      this.formData.codeId = value.codeId
+      this.formData.title = value.title
+      this.showTaskPicker = false;
+    },
+    // 确认选择类型
+    onConfirmType(value) {
+      // console.log(value)
+      this.type = value.text;
+      this.formData.module = value.text
+      this.showTypePicker = false;
+    },
+    // 确认用时
+    onChangeTime(time) {
+      console.log('time:', time, this.time)
+      this.formData.time = time
+
+      // ! 看文档，看是否需要异步关闭
+    },
+
+    // 保存 已写的日志
+    saveLogFun() {
+      if (this.task === '' || this.type === '' || this.detail === '') {
+        return Toast('请填写日志')
+      }
+      this.numId = this.numId + 1
+      // console.log('numId:', this.numId)
+      this.formData.detail = this.detail
+      
+      const data = _.cloneDeep(this.formData)
+      data.id = this.numId
+      this.logList.push(data)
+
+      this.task = ''
+      this.type = ''
+      this.time = 1
+      this.detail = ''
+      console.log(this.logList)
+
+      this.addBtnVisible = true
+
+
+      // this.formData.module = ''
+      // this.formData.time = ''
+      // this.formData.detail = ''
+       
+    },
+    // 取消 已写的日志
+    cancelLogFun() {
+      this.addBtnVisible = true
+    },
+    // 是否显示【+添加事物】按钮
+    handleBtnFun() {
+      this.addBtnVisible = !this.addBtnVisible
+    },
+
+    // 编辑 已写的日志
+    editLogFun(obj) {
+      this.logList = this.logList.filter(item => item.id !== obj.id)
+      
+      this.task = `${obj.codeId}${obj.title}`
+      this.type = obj.module
+      this.time = obj.time
+      this.detail = obj.detail
+      
+      this.addBtnVisible = false
+
+    },
+    // 删除 已写的日志
+    deleteLogFun(id) {
+      Dialog.confirm({
+        message: '确定删除吗？',
+      }).then(() => {
+        this.logList = this.logList.filter(item => item.id !== id)
+      }).catch(() => {
+        console.log('取消删除')
+      });
+    },
+
+    // 提交 整个日志表单
+    submitLogFun() {
+      if (this.logList.length === 0) {
+        return Toast('请先填写日志')
+      }
+      Dialog.confirm({
+        message: '确定提交吗？',
+      }).then(() => {
+        // console.log('提交日志：', this.logList)
+        // console.log('备注：', this.mark)
+        const myObjStr = JSON.stringify({logs: this.logList, mark: this.mark})
+        localStorage.setItem('localLogs', myObjStr)
+        this.$router.push('/list')
+      }).catch(() => {
+        console.log('取消提交')
+      });
+    }
+  },
 }
 </script>
 
-<style>
+<style lang='less'>
+.van-field__label{
+  width: 3.8em!important;
+}
+.van-hairline--top-bottom::after, .van-hairline-unset--top-bottom::after {
+    border-width: 0!important;
+}
+.home-container{
+  background: rgb(246, 247, 247);
+  .van-cell{
+    color: #646566;
+  }
+  .van-empty{
+    background-color: #fff;
+    margin-top: 10px;
+  }
+}
+.van-nav-bar .van-icon, .van-nav-bar .van-nav-bar__text {
+    color: #fff!important;
+}
+.flex-cont{
+  display: flex;
+  justify-content: space-between;
+}
+.handle-main{
+  margin: 10px 0;
+}
+.btn-group{
+  padding: 20px 40px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-around;
+  background-color: #fff;
+}
+
+.completed-log{
+  margin-top: 10px;
+}
+.handle-btns{
+  border-bottom: 1px solid #ebedf0;
+}
+.handle-btns .van-button{
+  height: inherit!important;
+}
+.logBox{
+  font-size: 16px;
+  line-height: 20px;
+  padding: 10px 16px;
+  box-sizing: border-box;
+}
+.logTitle{
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  margin-bottom: 2px;
+  h3{
+    width: 290px;
+    color: #333;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+  }
+  .code{
+    color: #A30014;
+    font-weight: 500;
+  }
+  .evaluate{
+    width: 60px;
+    color: #777777;
+    font-size: 14px;
+    text-align: right;
+  }
+}
+.logDetail{
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  p{
+    width: 290px;
+  }
+  .time{
+    width: 60px;
+    font-weight: 500;
+    color: #A30014;
+    text-align: right;
+  }
+}
+
+.handle-mark{
+  // margin-top: 10px;
+}
 
 </style>
