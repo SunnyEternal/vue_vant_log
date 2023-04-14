@@ -131,10 +131,10 @@
     
 
     <!-- 底部导航 -->
-    <div>
-      <van-tabbar v-model="active">
-        <van-tabbar-item icon="records" to="/home">记录</van-tabbar-item>
-        <van-tabbar-item icon="completed" to="/list">日志列表</van-tabbar-item>
+    <div class="my-tabbar">
+      <van-tabbar v-model="active" :placeholder="true" :safe-area-inset-bottom="true" :before-change="beforeChange">
+        <van-tabbar-item icon="records">记录</van-tabbar-item>
+        <van-tabbar-item icon="completed">日志列表</van-tabbar-item>
       </van-tabbar>
     </div>
 
@@ -408,7 +408,7 @@ export default {
     // 编辑 已写的日志
     editLogFun(obj) {
       this.logList = this.logList.filter(item => item.id !== obj.id)
-      
+
       this.task = `${obj.codeId}${obj.title}`
       this.type = obj.module
       this.time = obj.time
@@ -444,7 +444,31 @@ export default {
       }).catch(() => {
         console.log('取消提交')
       });
-    }
+    },
+
+    // 切换底部 tabbar 栏
+    beforeChange(newIndex, oldIndex) {
+      console.log('newIndex:', newIndex)
+      if (newIndex === 1 && (this.logList.length !== 0 || this.detail !== '')) {
+        // 禁止切换到设置标签
+        Dialog.confirm({
+          message: '正在编辑日志，确定离开吗？',
+        }).then(() => {
+          this.active = 1
+          this.$router.push('/list')
+          return true;
+        }).catch(() => {
+          this.active = 0;
+          console.log('取消离开')
+          return false;
+        });
+        
+      } else {
+        this.$router.push('/list')
+      }
+      // 允许切换到其他标签
+      return true;
+    },
   },
 }
 </script>
@@ -453,7 +477,7 @@ export default {
 .van-field__label{
   width: 3.8em!important;
 }
-.van-hairline--top-bottom::after, .van-hairline-unset--top-bottom::after {
+.completed-log .van-hairline--top-bottom::after, .van-hairline-unset--top-bottom::after {
     border-width: 0!important;
 }
 .home-container{
@@ -540,8 +564,8 @@ export default {
   }
 }
 
-.handle-mark{
-  // margin-top: 10px;
+.my-tabbar .van-tabbar__placeholder {
+  background-color: #fff;
 }
 
 </style>

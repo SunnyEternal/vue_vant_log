@@ -50,6 +50,7 @@ export default {
         this.$router.push('/home')
       } else {
         Toast('尚无登录权限，请联系管理员')
+        // Notify({ type: 'primary', message: index }); 
       }
     },
   },
