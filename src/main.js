@@ -23,9 +23,9 @@ Vue.prototype.$formatDate = function() {
   const dt = new Date()
   const y = dt.getFullYear();
 	let m = dt.getMonth() + 1;
-	m = m < 10 ? ('0' + m) : m;
+	// m = m < 10 ? ('0' + m) : m;
 	let d = dt.getDate();
-	d = d < 10 ? ('0' + d) : d;
+	// d = d < 10 ? ('0' + d) : d;
   return `${y}/${m}/${d}`
 }
 

@@ -193,6 +193,11 @@ export default {
     };
   },
   created() {
+    console.log('编辑页过来', this.$route.query.edit, this.$route.query.date)
+    if (this.$route.query.edit) {
+      this.date = this.$route.query.date ? this.$route.query.date : this.$formatDate
+    }
+
     this.username = localStorage.getItem('username')
     this.getTaskFun()
     this.getTypeFun()
