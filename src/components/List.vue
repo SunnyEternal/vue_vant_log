@@ -67,10 +67,12 @@
     </div>
 
     <!-- 底部导航 -->
-    <div>
-      <van-tabbar v-model="active">
+    <div class="my-tabbar">
+      <van-tabbar v-model="active" :placeholder="true" :safe-area-inset-bottom="true">
         <van-tabbar-item icon="records" to="/home">记录</van-tabbar-item>
         <van-tabbar-item icon="completed" to="/list">日志列表</van-tabbar-item>
+        <van-tabbar-item icon="friends-o" to="/group">分组</van-tabbar-item>
+        <van-tabbar-item icon="setting-o" to="/addTask">创建任务</van-tabbar-item>
       </van-tabbar>
     </div>
   </div>
@@ -350,6 +352,10 @@ export default {
   box-sizing: border-box;
   display: flex;
   justify-content: space-around;
+  background-color: #fff;
+}
+
+.my-tabbar .van-tabbar__placeholder {
   background-color: #fff;
 }
 </style>

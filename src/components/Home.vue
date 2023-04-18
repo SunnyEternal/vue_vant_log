@@ -143,6 +143,8 @@
       <van-tabbar v-model="active" :placeholder="true" :safe-area-inset-bottom="true" :before-change="beforeChange">
         <van-tabbar-item icon="records">记录</van-tabbar-item>
         <van-tabbar-item icon="completed">日志列表</van-tabbar-item>
+        <van-tabbar-item icon="friends-o">分组</van-tabbar-item>
+        <van-tabbar-item icon="setting-o">创建任务</van-tabbar-item>
       </van-tabbar>
     </div>
 
@@ -471,22 +473,28 @@ export default {
     // 切换底部 tabbar 栏
     beforeChange(newIndex, oldIndex) {
       console.log('newIndex:', newIndex)
-      if (newIndex === 1 && (this.logList.length !== 0 || this.detail !== '')) {
-        // 禁止切换到设置标签
-        Dialog.confirm({
-          message: '正在编辑日志，确定离开吗？',
-        }).then(() => {
-          this.active = 1
+      if (newIndex === 1) {
+        if (this.logList.length !== 0 || this.detail !== '') {
+          // 禁止切换到设置标签
+          Dialog.confirm({
+            message: '正在编辑日志，确定离开吗？',
+          }).then(() => {
+            this.active = 1
+            this.$router.push('/list')
+            return true;
+          }).catch(() => {
+            this.active = 0;
+            console.log('取消离开')
+            return false;
+          });
+        } else {
+          console.log('newIndex:', newIndex)
           this.$router.push('/list')
-          return true;
-        }).catch(() => {
-          this.active = 0;
-          console.log('取消离开')
-          return false;
-        });
-        
-      } else {
-        this.$router.push('/list')
+        }
+      } else if(newIndex === 2) {
+        this.$router.push('/group')
+      } else if(newIndex === 3) {
+        this.$router.push('/addTask')
       }
       // 允许切换到其他标签
       return true;
@@ -606,7 +614,7 @@ export default {
   font-size: 10px;
   line-height: 18px;
   text-align: center;
-  background-color: #ee0a24;
+  background-color: #1989fa;
   border-radius: 100px;
 }
 
