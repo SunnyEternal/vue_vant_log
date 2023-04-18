@@ -87,9 +87,17 @@
           />
         </van-popup>
 
-        <van-cell title="用时" value="内容">
-          <van-stepper v-model.number="time" step="0.5" min="0.5" max="12" default-value="2" @change="onChangeTime" disable-input theme="round" />
-        </van-cell>
+        <!-- <van-cell title="用时"> -->
+          <!-- <van-stepper v-model.number="time" step="0.5" min="0.5" max="12" default-value="2" @change="onChangeTime" disable-input theme="round" /> -->
+        <!-- </van-cell> -->
+        <div class="flex-time">
+          <van-field readonly label="时间" :border="false" />
+          <van-slider v-model="time" :step="0.5" :min="0.5" :max="12">
+            <template #button>
+              <div class="custom-button">{{time}}</div>
+            </template>
+          </van-slider>
+        </div>
 
         <van-field
           v-model="detail"
@@ -511,6 +519,16 @@ export default {
   display: flex;
   justify-content: space-between;
 }
+.flex-time{
+  display: flex;
+  justify-content: space-between;
+  background-color: #fff;
+  align-items: center;
+  padding-right: 15px;
+}
+.flex-time .van-field{
+  width: 90px!important;
+}
 .handle-main{
   margin: 10px 0;
 }
@@ -580,6 +598,16 @@ export default {
 
 .my-tabbar .van-tabbar__placeholder {
   background-color: #fff;
+}
+
+.custom-button {
+  width: 26px;
+  color: #fff;
+  font-size: 10px;
+  line-height: 18px;
+  text-align: center;
+  background-color: #ee0a24;
+  border-radius: 100px;
 }
 
 </style>
