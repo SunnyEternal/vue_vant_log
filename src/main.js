@@ -29,13 +29,18 @@ Vue.prototype.$formatDate = function() {
   return `${y}/${m}/${d}`
 }
 
-Vue.prototype.$getDateBeforeSixDays = function() {
+// Vue.prototype.$getDateBeforeSixDays = function() {
+//   const today = new Date();
+//   const sixDaysAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6);
+//   const year = sixDaysAgo.getFullYear();
+//   const month = String(sixDaysAgo.getMonth() + 1).padStart(2, '0');
+//   const day = String(sixDaysAgo.getDate()).padStart(2, '0');
+//   return `${year}, ${month}, ${day}`;
+// };
+Vue.prototype.$sixDays = function() {
   const today = new Date();
   const sixDaysAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6);
-  const year = sixDaysAgo.getFullYear();
-  const month = String(sixDaysAgo.getMonth() + 1).padStart(2, '0');
-  const day = String(sixDaysAgo.getDate()).padStart(2, '0');
-  return `${year}, ${month}, ${day}`;
+  return sixDaysAgo;
 };
 
 new Vue({

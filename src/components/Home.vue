@@ -153,7 +153,7 @@ export default {
       date: this.$formatDate(),    // 默认日历显示当前日期，日历时间可修改
       currDate: this.$formatDate(),// 当前日期 // !default-date 没写明白，去掉了
       currDay: '',
-      minDate: new Date(this.$getDateBeforeSixDays()),
+      minDate: new Date(this.$sixDays()),
       maxDate: new Date(),
       showCalendar: false,
 
@@ -233,8 +233,11 @@ export default {
       const currDay = Number(this.date.split('/')[2])
       console.log(currDay) // ! 注意字符串 和 数字 间的转换
 
-      const foundObj =  this.weekLogs.sevenDayLog.filter((obj) => obj.day === currDay);
-      this.finish = foundObj[0].todo
+      const foundArr =  this.weekLogs.sevenDayLog.filter((obj) => obj.day === currDay);
+      this.finish = foundArr.length != 0 ? foundArr[0].todo : false
+      console.log(this.weekLogs.sevenDayLog)
+      console.log('foundArr:', foundArr)
+      console.log(this.finish, 'currDay:', currDay)
       
       this.showCalendar = false;
     },
@@ -258,12 +261,13 @@ export default {
       // const currDay = this.$formatDate().split('/')[2]
       // const currDay = this.date.split('/')[2]
       // console.log(currDay)
+      const currDay = Number(this.date.split('/')[2])
       this.weekLogs = {
         month: 4,
         sevenDayLog: [{
           day: 14,
-          todo: false,
-          text: '未提交'
+          todo: true,
+          text: '完成'
         },{
           day: 13,
           todo: false,
@@ -295,7 +299,12 @@ export default {
           text: '完成'
         }]
       }
-      this.finish = this.weekLogs.sevenDayLog[0].todo
+      if (currDay === this.weekLogs.sevenDayLog[0].day) {
+        this.finish = this.weekLogs.sevenDayLog[0].todo
+      } else {
+        this. finish = false
+      }
+      
     },
     
     // 获取 task 任务

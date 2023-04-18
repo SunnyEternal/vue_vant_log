@@ -23,6 +23,8 @@
       <div class="btn-margin">
         <van-button round block type="info" native-type="submit">提交</van-button>
       </div>
+
+      {{myDate}}
     </van-form>
   </div>
 </template>
@@ -35,9 +37,20 @@ export default {
     return {
       username: '',
       password: '',
+      myDate: new Date()
 
       // !官方文档还有 校验规则，我没添加呢……
     };
+  },
+  created() {
+
+    
+  },
+  mounted() {
+    let my =  this.$formatDate()
+    console.log('feifei:', my)
+    let you = this.$sixDays()
+    console.log('riqi:', you)
   },
   methods: {
     onSubmit(values) {
