@@ -7,15 +7,25 @@
       </template>
     </van-nav-bar>
 
-    <van-tree-select
-      :items="items"
-      :active-id.sync="activeIds"
-      :main-active-index.sync="activeIndex"
-    />
+    <van-cell is-link @click="showPopup">创建分组</van-cell>
+    <van-popup v-model="show" position="top" :style="{ height: '60%' }">
+      <van-tree-select
+        :items="items"
+        :active-id.sync="activeIds"
+        :main-active-index.sync="activeIndex"
+      />
+      <div style="margin: 16px;">
+        <!-- <van-button plain block type="info" native-type="submit">创建分组</van-button> -->
+        <van-button plain block type="info" @click="creatGroup">创建分组</van-button>
+      </div>
+    </van-popup>
 
-    <div style="margin: 16px;">
-      <van-button plain block type="info" native-type="submit">创建分组</van-button>
-    </div>
+    
+
+    <!-- <div class="btn-group">
+      <van-button type="info" plain size="small" native-type="submit">保 存</van-button>
+      <van-button color="#ef4f4f" plain size="small">取 消</van-button>
+    </div> -->
 
     <van-tabs v-model="tabActive">
       <van-tab title="已有小组">
@@ -45,7 +55,7 @@
 </template>
 
 <script>
-import { Notify } from 'vant';
+import { Notify, Dialog } from 'vant';
 
 export default{
   components: {
@@ -53,6 +63,8 @@ export default{
   },
   data() {
     return{
+      show: false,
+
       tabActive: 0,
 
       active: 2,
@@ -284,10 +296,32 @@ export default{
       //   this.error = true;
       // });
     },
+
+    showPopup() {
+      this.show = true;
+    },
+
+    creatGroup() {
+      Dialog.confirm({
+        message: '确定创建小组吗？',
+      }).then(() => {
+        this.show = false
+      }).catch(() => {
+        this.show = false
+        console.log('取消创建')
+      });
+      
+    }
   }
 }
 </script>
 
-<style>
-
+<style lang='less'>
+.btn-group{
+  padding: 20px 40px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-around;
+  background-color: #fff;
+}
 </style>
