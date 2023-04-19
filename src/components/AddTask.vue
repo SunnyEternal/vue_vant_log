@@ -23,7 +23,7 @@
 
     <!-- <van-divider /> -->
 
-    <van-tabs v-model="active">
+    <van-tabs v-model="tabActive">
       <van-tab title="任务列表">
         <van-list
           v-model="loading"
@@ -69,6 +69,7 @@ export default{
   },
   data() {
     return{
+      tabActive: 0,
       active: 3,
 
       taskName: '',
