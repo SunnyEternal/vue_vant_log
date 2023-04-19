@@ -3,6 +3,8 @@
     <!-- 导航 -->
     <van-nav-bar title="研发部工作日志"/>
 
+    <img src="../assets/logo.png" class="logo" alt="">
+
     <!-- 登录 -->
     <van-form @submit="onSubmit">
       <van-field
@@ -21,7 +23,7 @@
         :rules="[{ required: true, message: '请填写密码' }]"
       />
       <div class="btn-margin">
-        <van-button round block type="info" native-type="submit">提交</van-button>
+        <van-button block type="info" native-type="submit">提交</van-button>
       </div>
 
     </van-form>
@@ -76,10 +78,16 @@ export default {
   color: #fff!important;
 }
 .van-form{
-  margin-top: 45%;
+  margin-top: 30%;
 }
 
 .btn-margin{
   margin: 16px;
+}
+
+.logo{
+  display: block;
+  margin: 60px auto;
+  width: 115px;
 }
 </style>
