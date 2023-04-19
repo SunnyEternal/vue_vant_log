@@ -24,7 +24,6 @@
         <van-button round block type="info" native-type="submit">提交</van-button>
       </div>
 
-      {{myDate}}
     </van-form>
   </div>
 </template>
@@ -37,7 +36,6 @@ export default {
     return {
       username: '',
       password: '',
-      myDate: new Date()
 
       // !官方文档还有 校验规则，我没添加呢……
     };
