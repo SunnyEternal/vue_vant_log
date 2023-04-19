@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { Button, Form, Field, NavBar, Calendar, Picker, Popup, Tabbar, TabbarItem, Icon, DatetimePicker, Stepper, Cell, CellGroup, List, Divider, SwipeCell, Empty, slider} from 'vant'
+import { Button, Form, Field, NavBar, Calendar, Picker, Popup, Tabbar, TabbarItem, Icon, DatetimePicker, Stepper, Cell, CellGroup, List, SwipeCell, Empty, Slider, Tab, Tabs, Divider} from 'vant'
 
 Vue.use(Button);
 Vue.use(Form);
@@ -18,5 +18,8 @@ Vue.use(CellGroup);
 Vue.use(List);
 Vue.use(SwipeCell);
 Vue.use(Empty);
-Vue.use(slider);
+Vue.use(Slider);
+Vue.use(Tab);
+Vue.use(Tabs);
+Vue.use(Divider);
 
