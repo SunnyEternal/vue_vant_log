@@ -28,7 +28,7 @@
     <div v-show="!finish">
       <!-- 写好的日志 --> 
       <div class="completed-log">
-        <van-swipe-cell class="handle-btns" v-for="(item) in logList" :key="item.id">
+        <van-swipe-cell class="handle-btns" :class="[item.id === editId && isEdit ? 'higlight' : '' ]" v-for="(item) in logList" :key="item.id">
           <van-cell-group>
             <div class="logBox">
               <div class="logTitle">
@@ -161,8 +161,6 @@ export default {
       finish: false,
       username: '',
       date: this.$formatDate(),    // 默认日历显示当前日期，日历时间可修改
-      currDate: this.$formatDate(),// 当前日期 // !default-date 没写明白，去掉了
-      currDay: '',
       minDate: new Date(this.$sixDays()),
       maxDate: new Date(),
       showCalendar: false,
@@ -184,7 +182,7 @@ export default {
       mark: '',
 
       formData: {       // 每一条日志
-        id: '',
+        id: 0,
         codeId: '',
         title: '',
         module: '',
@@ -200,6 +198,8 @@ export default {
         month: 1,
         sevenDayLog: []
       },
+      isEdit: false,
+      editId: 0,
     };
   },
   created() {
@@ -387,7 +387,7 @@ export default {
     },
     // 确认用时
     onChangeTime(time) {
-      console.log('time:', time, this.time)
+      console.log('change time:', time, this.time)
       this.formData.time = time
 
       // ! 看文档，看是否需要异步关闭
@@ -398,22 +398,33 @@ export default {
       if (this.task === '' || this.type === '' || this.detail === '') {
         return Toast('请填写日志')
       }
-      this.numId = this.numId + 1
-      // console.log('numId:', this.numId)
+      this.formData.time = this.time
       this.formData.detail = this.detail
+
       
-      const data = _.cloneDeep(this.formData)
-      data.id = this.numId
-      this.logList.push(data)
+      
+      console.log('this.isEdit:', this.isEdit)
+      if (!this.isEdit) {
+        this.numId = this.numId + 1
+        const data = _.cloneDeep(this.formData)
+        data.id = this.numId
+        // console.log('numId', this.numId)
+        // console.log('data:', data)
+        this.logList.push(data)
 
-      this.task = ''
-      this.type = ''
-      this.time = 1
-      this.detail = ''
-      console.log(this.logList)
+        this.task = ''
+        this.type = ''
+        this.time = 1
+        this.detail = ''
+        
+      } else {
+       
+        this.updateInfoById()
+      }
 
+      
+      this.isEdit = false
       this.addBtnVisible = true
-
 
       // this.formData.module = ''
       // this.formData.time = ''
@@ -423,24 +434,69 @@ export default {
     // 取消 已写的日志
     cancelLogFun() {
       this.addBtnVisible = true
+      this.isEdit = false
     },
     // 是否显示【+添加事物】按钮
     handleBtnFun() {
       this.addBtnVisible = !this.addBtnVisible
+      this.formData.codeId = ''
+      this.formData.title = ''
+      this.formData.module = ''
+      this.detail = ''
+      this.task = ''
+      this.type = ''
+      this.time = 1
     },
 
     // 编辑 已写的日志
     editLogFun(obj) {
-      this.logList = this.logList.filter(item => item.id !== obj.id)
+      console.log('编辑对象：', obj)
+      this.editId = obj.id
+      // this.logList = this.logList.filter(item => item.id !== obj.id)
+      this.isEdit = true
 
       this.task = `${obj.codeId}${obj.title}`
       this.type = obj.module
       this.time = obj.time
       this.detail = obj.detail
+      this.formData.codeId = obj.codeId
+      this.formData.title = obj.title
+      console.log('this.formData:', this.formData)
       
       this.addBtnVisible = false
 
     },
+    // editLogById() { // todo: 没有调用这个方法
+    //   const target = this.logList.find(item => item.id === this.editId)
+    //   console.log('logList:', this.logList)
+    //   console.log('target:', target)
+    //   if (target) {
+    //     console.log('feifieifei ')
+    //     const obj = _.cloneDeep(this.formData)
+    //     target.task = this.task
+    //     target.type = this.module
+    //     target.time = this.time
+    //     target.detail = this.detail
+    //   }
+    //   console.log('logList:', this.logList)
+    // },
+    updateInfoById() {
+      console.log(this.task, ',', this.time, ',', this.detail)
+      const id = this.editId
+      return this.logList.map(item => {
+        if (item.id === id) {
+          console.log('item:', item)
+          item.task = this.task
+          item.time = this.time
+          item.detail = this.detail
+          item.codeId = this.formData.codeId
+          item.module = this.formData.module
+          item.title = this.formData.title
+        }
+        return item
+      })
+    },
+
     // 删除 已写的日志
     deleteLogFun(id) {
       Dialog.confirm({
@@ -617,5 +673,7 @@ export default {
   background-color: #1989fa;
   border-radius: 100px;
 }
-
+.higlight{
+  border: 1px solid #1989fa;
+}
 </style>
