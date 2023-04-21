@@ -10,9 +10,21 @@
     <!-- 创建任务 -->
     <van-form @submit="taskSubmit">
       <van-field
+        v-model="taskId"
+        name="任务"
+        label="任务编号"
+        placeholder="请添加任务编号"
+      />
+      <van-field
         v-model="taskName"
         name="任务"
         label="任务名称"
+        placeholder="请添加任务名称"
+      />
+      <van-field
+        v-model="taskDesc"
+        name="任务"
+        label="任务描述"
         placeholder="请添加任务描述"
       />
       <!-- :rules="[{ required: true, message: '请添加任务' }]" -->
@@ -53,7 +65,7 @@
 </template>
 
 <script>
-import { Notify } from 'vant';
+import { Notify, Dialog } from 'vant';
 
 // todo: 局部注册
 // export default {
@@ -72,7 +84,9 @@ export default{
       tabActive: 0,
       active: 3,
 
+      taskId: '',
       taskName: '',
+      taskDesc: '',
       taskList: [],
 
       error: false,
@@ -99,8 +113,17 @@ export default{
       // 1. 调第一个接口，添加任务
 
       // 2. 调第二个接口，获取任务列表
-      Notify({ type: 'success', message: '创建任务成功！' });
+      
+      Dialog.confirm({
+        message: '确定创建任务？',
+      }).then(() => {
+        Notify({ type: 'success', message: '创建任务成功！' });
+      }).catch(() => {
+        console.log('取消创建任务')
+      });
+      this.taskId = ''
       this.taskName = ''
+      this.taskDesc = ''
     },
     // 
     onLoad() {

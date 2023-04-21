@@ -114,7 +114,7 @@
       </div>
 
       <div class="btn-group" v-show="addBtnVisible">
-        <van-button icon="plus" type="info" size="small" plain block @click="handleBtnFun">添加事物</van-button>
+        <van-button icon="plus" type="info" size="small" plain block @click="handleBtnFun">添加事务</van-button>
       </div>
 
       <div class="handle-mark">
