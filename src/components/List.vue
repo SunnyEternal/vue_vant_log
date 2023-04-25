@@ -26,45 +26,62 @@
     </div>
 
     <!-- 日志列表 -->
-    <div v-show="this.logList.length !== 0">
-      <div class="completed-log">
-        <van-swipe-cell class="handle-btns" v-for="(item, i) in logList" :key="i">
-          <van-cell-group>
-            <div class="logBox">
-              <div class="logTitle">
-                <h3>
-                  <span class="code">{{item.codeId}}</span> 
-                  {{item.title}}
-                </h3>
-                <span class="evaluate">{{item.module}}</span>
+    <!-- <van-tab v-for="index in 8" :title="'标签 ' + index"> -->
+    <van-tabs v-model="tabActive" class="completed-log">
+      <van-tab title="刘飞飞">
+        <div v-show="this.logList.length !== 0">
+          <van-swipe-cell class="handle-btns" v-for="(item, i) in logList" :key="i">
+            <van-cell-group>
+              <div class="logBox">
+                <div class="logTitle">
+                  <h3>
+                    <span class="code">{{item.codeId}}</span> 
+                    {{item.title}}
+                  </h3>
+                  <span class="evaluate">{{item.module}}</span>
+                </div>
+                <div class="logDetail">
+                  <p>{{item.detail}}</p>
+                  <span class="time">{{item.time}}</span>
+                </div>
               </div>
-              <div class="logDetail">
-                <p>{{item.detail}}</p>
-                <span class="time">{{item.time}}</span>
-              </div>
-            </div>
-          </van-cell-group>
-        </van-swipe-cell>
+            </van-cell-group>
+          </van-swipe-cell>
 
-        <van-field
-          v-if="detail !== ''"
-          v-model="detail"
-          rows="1"
-          autosize
-          readonly
-          :disabled="true"
-          label="备注"
-          type="textarea"
-        />
-      </div>
-    </div>
+          <van-field
+            v-if="detail !== ''"
+            v-model="detail"
+            rows="1"
+            autosize
+            readonly
+            :disabled="true"
+            label="备注"
+            type="textarea"
+          />
+        </div>
+        
+        <div v-show="this.logList.length === 0">
+          <van-empty description="没有日志记录" />
+          <div class="btn-group" v-show="addBtnVisible">
+            <van-button icon="plus" type="info" size="small" plain block @click="addLogPage">添加事物</van-button>
+          </div>
+        </div>
+      </van-tab>
+
+      <van-tab title="宋辉">
+      </van-tab>
+      <van-tab title="嘟嘟">
+      </van-tab>
+      <van-tab title="兰兰">
+      </van-tab>
+      <van-tab title="吉娅">
+      </van-tab>
+      <van-tab title="Amy">
+      </van-tab>
+      <van-tab title="安迪">
+      </van-tab>
+    </van-tabs>
     
-    <div v-show="this.logList.length === 0">
-      <van-empty description="没有日志记录" />
-      <div class="btn-group" v-show="addBtnVisible">
-        <van-button icon="plus" type="info" size="small" plain block @click="addLogPage">添加事物</van-button>
-      </div>
-    </div>
 
     <!-- 底部导航 -->
     <!-- <div class="my-tabbar">
@@ -93,7 +110,7 @@ export default {
 
       logList: [],        // 日志列表
 
-      active: 1,          // 底部导航
+      tabActive: 1,          // 
 
       detail: '',
 

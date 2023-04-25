@@ -6,6 +6,7 @@ import List from '../components/List.vue'
 import Group from '../components/Group.vue'
 import AddTask from '../components/AddTask.vue'
 import Detail from '../components/Detail.vue'
+import Handle from '../components/Handle.vue'
 
 Vue.use(VueRouter)
 
@@ -34,6 +35,10 @@ Vue.use(VueRouter)
   {
     path: '/detail',
     component: Detail
+  },
+  {
+    path: '/handle',
+    component: Handle
   }
   // {
   //   path: '/about',

@@ -9,6 +9,8 @@ import 'vant/lib/index.less';
 
 Vue.config.productionTip = false
 
+export const eventBus = new Vue()
+
 // Vue.dateFormat(function() {
 //   const dt = new Date()
 //   const y = dt.getFullYear();
