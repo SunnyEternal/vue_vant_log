@@ -4,8 +4,20 @@ import router from './router'
 
 import './plugins/vant.js'
 import './assets/css/global.css'
-// 引入全部样式
-import 'vant/lib/index.less';
+import 'vant/lib/index.less'    // 引入全部样式
+
+import axios from 'axios'
+axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'    // 配置请求的根路径
+// 为请求头添加“Authorization”属性，用于调用API时  
+axios.interceptors.request.use(config => {
+  console.log('main.js config:', config)
+  config.headers.Authorization = window.sessionStorage.getItem('token')
+  return config   // 在最后必须 return config
+})
+axios.interceptors.response.use(config => {
+  return config
+})
+Vue.prototype.$http = axios
 
 Vue.config.productionTip = false
 

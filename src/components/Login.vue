@@ -1,12 +1,13 @@
 <template>
   <div>
-    <!-- 导航 -->
-    <!-- <van-nav-bar title="研发部工作日志"/> -->
+
+    <!-- 头部-标题栏 -->
+    <van-nav-bar title="研发部工作日志"></van-nav-bar>
 
     <img src="../assets/logo.png" class="logo" alt="">
 
     <!-- 登录 -->
-    <van-form @submit="onSubmit">
+    <van-form @submit="loginFun">
       <van-field
         v-model="username"
         name="username"
@@ -27,6 +28,7 @@
       </div>
 
     </van-form>
+
   </div>
 </template>
 
@@ -43,27 +45,38 @@ export default {
     };
   },
   created() {
-
     
   },
   mounted() {
-    let my =  this.$formatDate()
-    console.log('feifei:', my)
-    let you = this.$sixDays()
-    console.log('riqi:', you)
+
   },
   methods: {
-    onSubmit(values) {
+    // 登录
+    loginFun(values) {
       // console.log('submit', values);
       if (values.username === 'feifei' && values.password === '123') {
         localStorage.setItem('username', 'feifei')
-        this.$router.push('/home')
+
+        const userData = {"data": {"data":{"userId":2,"username":"feifei","token":"18938477","isSysAdmin":false,"isGroupAdmin":true,"groups":[{"groupId":1,"isAdmin":false},{"groupId":2,"isAdmin":true}]},"meta":{"msg":"OK","status":200}}}
+        localStorage.setItem('userData', JSON.stringify(userData))
+
+        this.$router.push('/main')
       } else if (values.username === 'admin' && values.password === '123') {
         localStorage.setItem('username', 'admin')
-        this.$router.push('/home')
+
+        const userData = {"data": {"data":{"userId":1,"username":"admin","token":"18938498","isSysAdmin":true,"isGroupAdmin":true,"groups":[{"groupId":1,"isAdmin":true},{"groupId":2,"isAdmin":false}]},"meta":{"msg":"OK","status":200}}}
+        localStorage.setItem('userData', JSON.stringify(userData))
+
+        this.$router.push('/main')
+      } else if (values.username === 'Mia' && values.password === '123') {
+        localStorage.setItem('username', 'Mia')
+
+        const userData = {"data": {"data":{"userId":3,"username":"Mia","token":"18938466","isSysAdmin":false,"isGroupAdmin":false,"groups":[{"groupId":1,"isAdmin":false},{"groupId":2,"isAdmin":false}]},"meta":{"msg":"OK","status":200}}}
+        localStorage.setItem('userData', JSON.stringify(userData))
+
+        this.$router.push('/main')
       } else {
         Toast('尚无登录权限，请联系管理员')
-        // Notify({ type: 'primary', message: index }); 
       }
     },
   },
