@@ -1,11 +1,11 @@
 <template>
   <div class="addTask-container">
     <!-- 导航 -->
-    <van-nav-bar title="研发部工作日志" stop-circle-o @click-right="onClickRight">
+    <!-- <van-nav-bar title="研发部工作日志" stop-circle-o @click-right="onClickRight">
       <template #right>
         <van-icon name="stop-circle-o" size="18" />
       </template>
-    </van-nav-bar>
+    </van-nav-bar> -->
 
     <!-- 创建任务 -->
     <van-form @submit="taskSubmit">
@@ -52,14 +52,14 @@
     
 
     <!-- 底部导航 -->
-    <div class="my-tabbar">
+    <!-- <div class="my-tabbar">
       <van-tabbar v-model="active" :placeholder="true" :safe-area-inset-bottom="true">
         <van-tabbar-item icon="records" to="/home">记录</van-tabbar-item>
         <van-tabbar-item icon="completed" to="/list">日志列表</van-tabbar-item>
         <van-tabbar-item icon="friends-o" to="/group">分组</van-tabbar-item>
         <van-tabbar-item icon="setting-o" to="/addTask">创建任务</van-tabbar-item>
       </van-tabbar>
-    </div>
+    </div> -->
 
   </div>
 </template>

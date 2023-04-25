@@ -1,11 +1,11 @@
 <template>
   <div class="list-container">
     <!-- 导航 -->
-    <van-nav-bar title="研发部工作日志" stop-circle-o @click-right="onClickRight">
+    <!-- <van-nav-bar title="研发部工作日志" stop-circle-o @click-right="onClickRight">
       <template #right>
         <van-icon name="stop-circle-o" size="18" />
       </template>
-    </van-nav-bar>
+    </van-nav-bar> -->
 
     <!-- :show-confirm="false" 日历有快捷选择 -->
     <!-- 展示区 -->
@@ -28,7 +28,7 @@
     <!-- 日志列表 -->
     <div v-show="this.logList.length !== 0">
       <div class="completed-log">
-        <van-swipe-cell class="handle-btns" v-for="(item) in logList" :key="item.id">
+        <van-swipe-cell class="handle-btns" v-for="(item, i) in logList" :key="i">
           <van-cell-group>
             <div class="logBox">
               <div class="logTitle">
@@ -67,14 +67,14 @@
     </div>
 
     <!-- 底部导航 -->
-    <div class="my-tabbar">
+    <!-- <div class="my-tabbar">
       <van-tabbar v-model="active" :placeholder="true" :safe-area-inset-bottom="true">
         <van-tabbar-item icon="records" to="/home">记录</van-tabbar-item>
         <van-tabbar-item icon="completed" to="/list">日志列表</van-tabbar-item>
         <van-tabbar-item icon="friends-o" to="/group">分组</van-tabbar-item>
         <van-tabbar-item icon="setting-o" to="/addTask">创建任务</van-tabbar-item>
       </van-tabbar>
-    </div>
+    </div> -->
   </div>
 </template>
 

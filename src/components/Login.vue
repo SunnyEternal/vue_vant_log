@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 导航 -->
-    <van-nav-bar title="研发部工作日志"/>
+    <!-- <van-nav-bar title="研发部工作日志"/> -->
 
     <img src="../assets/logo.png" class="logo" alt="">
 
