@@ -22,8 +22,8 @@
     <div v-show="!finish">
       <!-- 写好的日志 --> 
       <div class="completed-log" v-show="!noData">
-        <van-swipe-cell class="handle-btns" :class="[item.id === editId && isEdit ? 'higlight' : '' ]" v-for="(item) in logList" :key="item.id">
-          <van-cell-group>
+        <van-swipe-cell class="handle-btns" :class="[item.id === editId && isEdit ? 'higlight' : '' ]" v-for="(item, i) in logList" :key="i">
+          <van-cell-group @click="editFun(item)">
             <div class="logBox">
               <div class="logTitle">
                 <h3>
@@ -40,7 +40,7 @@
           </van-cell-group>
           <template #right>
             <van-button square type="danger" text="删除" @click="deleteLogFun(item.id)" />
-            <van-button square type="info" text="编辑" @click="editLogFun(item)" />
+            <!-- <van-button square type="info" text="编辑" @click="editLogFun(item)" /> -->
           </template>
         </van-swipe-cell>
       </div>
@@ -136,15 +136,21 @@ export default {
     };
   },
   created() {
-    console.log('编辑页过来', this.$route.query.edit, this.$route.query.date)
+    // console.log('编辑页过来', this.$route.query.edit, this.$route.query.date)
     if (this.$route.query.edit) {
       this.date = this.$route.query.date ? this.$route.query.date : this.$formatDate
     } else {
       let list = localStorage.getItem('logList')
-      if (list) {
+      // console.log('home logList:', list, typeof(list))
+      // console.log(list === 'undefined')
+      if (list && list !== 'undefined') {
         this.noData = false
         this.logList = JSON.parse(list)
       } else {
+        if (typeof(list) === 'string') {
+          // console.log('string')
+          localStorage.removeItem('logList')
+        }
         // 还没有添加日志记录
         this.noData = true
         this.logList = []
@@ -158,9 +164,6 @@ export default {
 
     this.getSevenDayDate()
 
-    // eventBus.$on('my-event', (data) => {
-    //   console.log('data:::', data)
-    // })
   },
   mounted() {
 
@@ -269,7 +272,36 @@ export default {
       this.time = 1
     },
 
-    // 编辑 已写的日志
+    editFun(obj) {
+      console.log('编辑对象：', obj)
+
+      // eventBus.$emit('event-editLog', obj)
+
+      
+      localStorage.setItem('editData', JSON.stringify(obj))
+      this.$router.push({
+        path: '/handle',
+        query: {
+          isEdit: true
+        }
+      })
+
+      // this.editId = obj.id
+      // this.isEdit = true
+
+      // this.task = `${obj.codeId}${obj.title}`
+      // this.type = obj.module
+      // this.time = obj.time
+      // this.detail = obj.detail
+      // this.formData.codeId = obj.codeId
+      // this.formData.title = obj.title
+      // console.log('this.formData:', this.formData)
+      
+      // this.addBtnVisible = false
+
+    },
+
+    // 编辑 点击每条「日志」进行
     editLogFun(obj) {
       console.log('编辑对象：', obj)
       this.editId = obj.id
@@ -349,38 +381,8 @@ export default {
       }).catch(() => {
         console.log('取消提交')
       });
-    },
-
-    // 切换底部 tabbar 栏
-    beforeChange(newIndex, oldIndex) {
-      console.log('newIndex:', newIndex)
-      if (newIndex === 1) {
-        if (this.logList.length !== 0 || this.detail !== '') {
-          // 禁止切换到设置标签
-          Dialog.confirm({
-            message: '正在编辑日志，确定离开吗？',
-          }).then(() => {
-            this.active = 1
-            this.$router.push('/list')
-            return true;
-          }).catch(() => {
-            this.active = 0;
-            console.log('取消离开')
-            return false;
-          });
-        } else {
-          console.log('newIndex:', newIndex)
-          this.$router.push('/list')
-        }
-      } else if(newIndex === 2) {
-        this.$router.push('/group')
-      } else if(newIndex === 3) {
-        this.$router.push('/addTask')
-      }
-      // 允许切换到其他标签
-      return true;
-    },
-  },
+    }
+  }
 }
 </script>
 

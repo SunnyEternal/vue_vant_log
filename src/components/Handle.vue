@@ -1,7 +1,5 @@
 <template>
   <div class="handle-container">
-    <!-- <van-button square type="danger" text="删除" @click="sendData" /> -->
-    <!-- <div class="handle-main" v-show="!addBtnVisible"> -->
     <div class="handle-main">
       <van-field
         readonly
@@ -65,7 +63,7 @@
 
 <script>
 import { Toast } from 'vant'
-// ComponentA.vue
+// ComponentB.vue
 import { eventBus } from '../main.js'
 export default {
   data() {
@@ -95,7 +93,9 @@ export default {
       detail: '',
 
       logList: [],
-      numId: 0
+
+      // editObj: {},
+      isEdit: false
     }
   },
   computed: {
@@ -109,8 +109,41 @@ export default {
     this.getTaskFun()
     this.getTypeFun()
 
+    // eventBus.$once('event-editLog', (obj) => {
+    //   this.editObj = obj
+    //   console.log('bian:', this.editObj)
+    // })
+
+    this.isEdit = this.$route.query.isEdit ? this.$route.query.isEdit : false
+
+  },
+  mounted() {
+    this.displayEditData()
   },
   methods: {
+    displayEditData() {
+      const editData = JSON.parse(localStorage.getItem('editData'))
+      if (this.isEdit) {
+        this.task = `${editData.codeId}${editData.title}`
+        console.log(editData)
+        this.type = editData.module
+        this.time = editData.time
+        this.detail = editData.detail
+        this.formData.codeId = editData.codeId
+        this.formData.title = editData.title
+      }
+    },
+    // handleEvent(obj) {
+    //   // console.log('obj:', obj)
+    //   // this.task = `${obj.codeId}${obj.title}`
+    //   // console.log(this.task)
+    //   // this.type = obj.module
+    //   // this.time = obj.time
+    //   // this.detail = obj.detail
+    //   // this.formData.codeId = obj.codeId
+    //   // this.formData.title = obj.title
+    //   console.log('this.formData:', this.formData)
+    // },
     // 获取 task 任务
     getTaskFun() {
       this.rawTask = [{
@@ -154,7 +187,6 @@ export default {
       }]
     },
    
-    
 
     // 确认选择任务
     onConfirmTask(value) {
@@ -187,15 +219,6 @@ export default {
       });
       return arr;
     },
-
-    sendData() {
-      const data = {
-        "id": 12,
-        "name": "Mia"
-      }
-      // eventBus.$emit('my-event', data)
-      // this.$router.push('/home')
-    },
     // 保存 已写的日志
     saveLogFun() {
       if (this.task === '' || this.type === '' || this.detail === '') {
@@ -203,26 +226,24 @@ export default {
       }
       this.formData.time = this.time
       this.formData.detail = this.detail
-
-      
       
       console.log('this.isEdit:', this.isEdit)
       if (!this.isEdit) {
-        this.numId = this.numId + 1
         const data = _.cloneDeep(this.formData)
-        data.id = this.numId
-        // console.log('numId', this.numId)
         let logList = localStorage.getItem('logList')
         console.log('logList:',logList)
         if (logList) {
           logList = JSON.parse(logList)
           logList.push(data)
+          
+          logList = this.setId(logList)
           console.log('logList:', logList)
           localStorage.setItem('logList', JSON.stringify(logList))
           
         } else {
           let log = []
           log.push(data)
+          log = this.setId(log)
           console.log('log:', log)
           localStorage.setItem('logList', JSON.stringify(log))
           
@@ -245,12 +266,45 @@ export default {
       this.addBtnVisible = true
 
     },
-    // 取消 已写的日志
-    cancelLogFun() {
-      // this.addBtnVisible = true
-      // this.isEdit = false
+
+    updateInfoById() {
+      console.log(this.task, ',', this.time, ',', this.detail)
+      
+      const editData = JSON.parse(localStorage.getItem('editData'))
+      const editId = editData.id
+      let logList = JSON.parse(localStorage.getItem('logList'))
+
+      let temp = []
+
+      temp = logList.map(item => {
+        if (item.id === editId) {
+          item.task = this.task
+          item.time = this.time
+          item.detail = this.detail
+          item.codeId = this.formData.codeId
+          item.module = this.formData.module
+          item.title = this.formData.title
+        }
+        return item
+      })
+      localStorage.setItem('logList', JSON.stringify(temp))
       this.$router.push('/home')
     },
+
+    // 取消 已写的日志
+    cancelLogFun() {
+      this.$router.push('/home')
+    },
+
+    // 工具 为数组中每个对象添加 id
+    setId(arr) {
+      return arr = arr.map((item, index) => {
+        return {
+          ...item,
+          id: index + 1
+        }
+      })
+    }
   }
 }
 
