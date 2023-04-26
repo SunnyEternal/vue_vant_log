@@ -19,7 +19,8 @@
       <van-calendar v-model="showCalendar" @confirm="onConfirmDate" color="#1989fa" :min-date="minDate" :max-date="maxDate" :formatter="formatter" />
     </div>
 
-    <div v-show="!finish">
+    <!-- <div v-show="!finish"> -->
+    <div>
       <!-- 写好的日志 --> 
       <div class="completed-log" v-show="!noData">
         <van-swipe-cell class="handle-btns" :class="[item.id === editId && isEdit ? 'higlight' : '' ]" v-for="(item, i) in logList" :key="i">
@@ -42,6 +43,16 @@
             <van-button square type="danger" text="删除" @click="deleteLogFun(item.id)" />
           </template>
         </van-swipe-cell>
+         <van-field
+          v-show="!showSubmitBtn"
+          v-model="mark"
+          readonly
+          rows="1"
+          autosize
+          label="备注"
+          type="textarea"
+          placeholder="今日未处理开发工作"
+        />
       </div>
 
       
@@ -51,9 +62,10 @@
         <van-button icon="plus" type="info" size="small" plain block @click="handleBtnFun">添加事务</van-button>
       </div> -->
 
-      <div class="handle-mark">
+      <div class="handle-mark" >
         
         <van-field
+          v-show="showSubmitBtn"
           v-model="mark"
           rows="1"
           autosize
@@ -65,15 +77,23 @@
     background: #fff; padding-top: 30px; padding-bottom: 10px">
           <p>{{defaultText}}</p>
         </div>
-        <div class="btn-group">
+        <div class="btn-group" v-show="showSubmitBtn">
           <van-button type="info" block @click="submitLogFun">提 交</van-button>
         </div>
         
       </div>
     </div>
 
-    <div v-show="finish">
-      <van-empty description="日志已提交" />
+    <!-- 7天内日志提交情况 -->
+    <div class="tag-group">
+      <div style="display: inline-block;" v-for="(tagObj, k) in weekLogs.sevenDayLog" :key="k">
+        <van-tag v-if="!tagObj.todo" type="warning" round size="large">
+          {{tagObj.day}}日{{tagObj.text}}
+        </van-tag>
+         <van-tag v-else type="success" round size="large">
+          {{tagObj.day}}日{{tagObj.text}}
+        </van-tag>
+      </div>
     </div>
 
   </div>
@@ -98,15 +118,6 @@ export default {
 
       mark: '',
 
-      formData: {       // 每一条日志
-        id: 0,
-        codeId: '',
-        title: '',
-        module: '',
-        time: 1,
-        detail: ''
-      },
-
       logList: [],      // 已写好的所有日志
       addBtnVisible: false,// 是否显示添加【事物按钮】
 
@@ -118,57 +129,52 @@ export default {
       editId: 0,
 
       noData: false,
-      defaultText: '点击 ➕ 号开始记录'
+      defaultText: '点击 ➕ 号开始记录',
+
+      showSubmitBtn: false,
     };
   },
   created() {
-    // console.log('编辑页过来', this.$route.query.edit, this.$route.query.date)
-    if (this.$route.query.edit) {
-      this.date = this.$route.query.date ? this.$route.query.date : this.$formatDate
-    } else {
-      let list = localStorage.getItem('logList')
-      // console.log('home logList:', list, typeof(list))
-      // console.log(list === 'undefined')
-      if (list && list !== 'undefined') {
-        this.noData = false
-        this.logList = JSON.parse(list)
-      } else {
-        if (typeof(list) === 'string') {
-          // console.log('string')
-          localStorage.removeItem('logList')
-        }
-        // 还没有添加日志记录
-        this.noData = true
-        this.logList = []
-      }
-      
-    }
-
     this.username = localStorage.getItem('username')
-    // this.getTaskFun()
-    // this.getTypeFun()
+
+    // todo：1. 获取7天内日志提交情况，如果当天没提交，显示7天内没提交的【日期 tag 】，如果当天的提交了，显示当天的，并展示未提交的【日期 tag】。
+    // todo：2. 如果当天提交日志了，获取并展示。 this.getDayLog()
+
+    this.getDayLog()
+
+    this.showSubmitBtn = localStorage.getItem('showSubmitBtn') ? JSON.parse(localStorage.getItem('showSubmitBtn')) : false
+
+    let list = localStorage.getItem('logList')
+    if (list && list !== 'undefined') {
+      this.noData = false
+      this.logList = JSON.parse(list)
+    } else {
+      if (typeof(list) === 'string') {
+        localStorage.removeItem('logList')
+      }
+      // 还没有添加日志记录
+      this.noData = true
+      this.logList = []
+    }
+      
+
+    
 
     this.getSevenDayDate()
 
-  },
-  mounted() {
-
-  },
-  computed: {
-   
   },
   methods: {
     // 在日历上选择日期
     onConfirmDate(date) {
       this.date = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
       const currDay = Number(this.date.split('/')[2])
-      console.log(currDay) // ! 注意字符串 和 数字 间的转换
+      // console.log(currDay) // ! 注意字符串 和 数字 间的转换
 
       const foundArr =  this.weekLogs.sevenDayLog.filter((obj) => obj.day === currDay);
       this.finish = foundArr.length != 0 ? foundArr[0].todo : false
-      console.log(this.weekLogs.sevenDayLog)
-      console.log('foundArr:', foundArr)
-      console.log(this.finish, 'currDay:', currDay)
+      // console.log(this.weekLogs.sevenDayLog)
+      // console.log('foundArr:', foundArr)
+      // console.log(this.finish, 'currDay:', currDay)
       
       this.showCalendar = false;
     },
@@ -196,36 +202,36 @@ export default {
       this.weekLogs = {
         month: 4,
         sevenDayLog: [{
-          day: 14,
-          todo: true,
-          text: '完成'
+          day: 26,
+          todo: false,
+          text: '未提交'
         },{
-          day: 13,
+          day: 25,
           todo: false,
           text: '未提交'
         },
         {
-          day: 12,
+          day: 24,
           todo: false,
           text: '未提交'
         },
         {
-          day: 11,
+          day: 23,
           todo: true,
           text: '完成'
         },
         {
-          day: 10,
+          day: 22,
           todo: false,
           text: '未提交'
         },
         {
-          day: 9,
+          day: 21,
           todo: true,
           text: '完成'
         },
         {
-          day: 8,
+          day: 20,
           todo: true,
           text: '完成'
         }]
@@ -237,20 +243,17 @@ export default {
       }
       
     },
+    // 获取当天日志
+    getDayLog() {
+      // API 传 userId 和 date // todo: 记得回显mark
+      // console.log(this.date === this.$formatDate())
     
-    
-
-   
-    // 是否显示【+添加事物】按钮
-    handleBtnFun() {
-      this.addBtnVisible = !this.addBtnVisible
-      this.formData.codeId = ''
-      this.formData.title = ''
-      this.formData.module = ''
-      this.detail = ''
-      this.task = ''
-      this.type = ''
-      this.time = 1
+      if (this.date === this.$formatDate()) {
+        let myData = localStorage.getItem('logList') ? JSON.parse(localStorage.getItem('logList')) : []
+        this.logList = myData
+      } else {
+        this.logList = []
+      }
     },
     // 编辑 点击每条「日志」进行
     editLogFun(obj) {
@@ -264,7 +267,6 @@ export default {
         }
       })
     },
-
     
     // editLogById() { // todo: 没有调用这个方法
     //   const target = this.logList.find(item => item.id === this.editId)
@@ -305,10 +307,12 @@ export default {
         // console.log('备注：', this.mark)
 
         // API 返回成功，则操作如下：
-        localStorage.removeItem('logList')
+        // localStorage.removeItem('logList')
         const myObjStr = JSON.stringify({logs: this.logList, mark: this.mark})
         localStorage.setItem('localLogs', myObjStr)
-        this.$router.push('/list')
+
+        this.showSubmitBtn = false
+        localStorage.setItem('showSubmitBtn', this.showSubmitBtn)
       }).catch(() => {
         console.log('取消提交')
       });
@@ -435,7 +439,15 @@ export default {
   background-color: #1989fa;
   border-radius: 100px;
 }
-.higlight{
-  border: 1px solid #1989fa;
+
+
+.tag-group{
+  background: #fff; 
+  margin-top: 10px;
+  .van-tag{
+    margin: 10px 10px 0 10px!important;
+    font-size: 14px;
+  }
 }
+
 </style>

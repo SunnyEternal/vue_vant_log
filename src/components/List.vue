@@ -90,10 +90,16 @@ export default {
   },
   created() {
     this.username = localStorage.getItem('username')
-    const myObjStr = localStorage.getItem('localLogs')
-    const myObj = JSON.parse(myObjStr)
-    this.logList = myObj.logs
-    this.mark = myObj.mark
+    const myObjStr = localStorage.getItem('localLogs') ? localStorage.getItem('localLogs') : undefined
+    if (myObjStr) {
+      const myObj = JSON.parse(myObjStr)
+      this.logList = myObj.logs
+      this.mark = myObj.mark
+    } else {
+      this.logList = []
+      this.mark = ''
+    }
+    
     
     // console.log(this.logList)
 

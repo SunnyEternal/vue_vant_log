@@ -230,20 +230,22 @@ export default {
       if (!this.isEdit) {
         const data = _.cloneDeep(this.formData)
         let logList = localStorage.getItem('logList')
-        console.log('logList:',logList)
+        // console.log('logList:',logList)
         if (logList) {
           logList = JSON.parse(logList)
           logList.push(data)
           
           logList = this.setId(logList)
-          console.log('logList:', logList)
+          // console.log('logList:', logList)
+          
+          
           localStorage.setItem('logList', JSON.stringify(logList))
           
         } else {
           let log = []
           log.push(data)
           log = this.setId(log)
-          console.log('log:', log)
+          // console.log('log:', log)
           localStorage.setItem('logList', JSON.stringify(log))
           
         }
@@ -253,6 +255,7 @@ export default {
         this.time = 1
         this.detail = ''
 
+        localStorage.setItem('showSubmitBtn', true)
         this.$router.push('/home')
         
       } else {
@@ -286,6 +289,7 @@ export default {
         }
         return item
       })
+      localStorage.setItem('showSubmitBtn', true)
       localStorage.setItem('logList', JSON.stringify(temp))
       this.$router.push('/home')
     },
