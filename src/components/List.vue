@@ -1,11 +1,5 @@
 <template>
   <div class="list-container">
-    <!-- 导航 -->
-    <!-- <van-nav-bar title="研发部工作日志" stop-circle-o @click-right="onClickRight">
-      <template #right>
-        <van-icon name="stop-circle-o" size="18" />
-      </template>
-    </van-nav-bar> -->
 
     <!-- :show-confirm="false" 日历有快捷选择 -->
     <!-- 展示区 -->
@@ -26,31 +20,30 @@
     </div>
 
     <!-- 日志列表 -->
-    <!-- <van-tab v-for="index in 8" :title="'标签 ' + index"> -->
-    <van-tabs v-model="tabActive" class="completed-log">
-      <van-tab title="刘飞飞">
-        <div v-show="this.logList.length !== 0">
-          <van-swipe-cell class="handle-btns" v-for="(item, i) in logList" :key="i">
+    <van-tabs v-model="tabActive" class="completed-log" v-if="resData.length !== 0">
+      <van-tab v-for="(item,i) in resData" :title="item.username" :key="i">
+        <div v-if="item.list.length !== 0">
+          <van-swipe-cell class="handle-btns" v-for="(obj, j) in item.list" :key="j">
             <van-cell-group>
               <div class="logBox">
                 <div class="logTitle">
                   <h3>
-                    <span class="code">{{item.codeId}}</span> 
-                    {{item.title}}
+                    <span class="code">{{obj.codeId}}</span> 
+                    {{obj.title}}
                   </h3>
-                  <span class="evaluate">{{item.module}}</span>
+                  <span class="evaluate">{{obj.module}}</span>
                 </div>
                 <div class="logDetail">
-                  <p>{{item.detail}}</p>
-                  <span class="time">{{item.time}}</span>
+                  <p>{{obj.detail}}</p>
+                  <span class="time">{{obj.time}}</span>
                 </div>
               </div>
             </van-cell-group>
           </van-swipe-cell>
 
           <van-field
-            v-if="detail !== ''"
-            v-model="detail"
+            v-if="item.mark !== ''"
+            v-model="item.mark"
             rows="1"
             autosize
             readonly
@@ -60,38 +53,16 @@
           />
         </div>
         
-        <div v-show="this.logList.length === 0">
-          <van-empty description="没有日志记录" />
-          <div class="btn-group" v-show="addBtnVisible">
-            <van-button icon="plus" type="info" size="small" plain block @click="addLogPage">添加事物</van-button>
-          </div>
+        <div v-show="item.list.length === 0">
+          <van-empty class="empty1" description="没有日志记录" />
         </div>
       </van-tab>
-
-      <van-tab title="宋辉">
-      </van-tab>
-      <van-tab title="嘟嘟">
-      </van-tab>
-      <van-tab title="兰兰">
-      </van-tab>
-      <van-tab title="吉娅">
-      </van-tab>
-      <van-tab title="Amy">
-      </van-tab>
-      <van-tab title="安迪">
-      </van-tab>
+      
     </van-tabs>
+    <div v-if="resData.length === 0">
+      <van-empty class="empty2" description="没有组员提交日志记录" />
+    </div>
     
-
-    <!-- 底部导航 -->
-    <!-- <div class="my-tabbar">
-      <van-tabbar v-model="active" :placeholder="true" :safe-area-inset-bottom="true">
-        <van-tabbar-item icon="records" to="/home">记录</van-tabbar-item>
-        <van-tabbar-item icon="completed" to="/list">日志列表</van-tabbar-item>
-        <van-tabbar-item icon="friends-o" to="/group">分组</van-tabbar-item>
-        <van-tabbar-item icon="setting-o" to="/addTask">创建任务</van-tabbar-item>
-      </van-tabbar>
-    </div> -->
   </div>
 </template>
 
@@ -99,7 +70,6 @@
 export default {
   data() {
     return {
-      finish: false,
       addBtnVisible: true,
       username: '',
       date: this.$formatDate(),    // 默认日历显示当前日期，日历时间可修改
@@ -110,7 +80,7 @@ export default {
 
       logList: [],        // 日志列表
 
-      tabActive: 1,          // 
+      tabActive: 0,          // 
 
       detail: '',
 
@@ -138,170 +108,117 @@ export default {
     onConfirmDate(date) {
       this.date = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
       this.getLogByDate(this.date)
-      const datesBefore = this.getDatesBefore()
-      console.log('this.date:', this.date, datesBefore)
-      console.log(this.checkDateInArray(this.date, datesBefore))
-      this.addBtnVisible = this.checkDateInArray(this.date, datesBefore)
+
+      // const datesBefore = this.getDatesBefore()
+      // this.addBtnVisible = this.checkDateInArray(this.date, datesBefore)
       this.showCalendar = false;
     },
     // 获取历史日志
     getHistoryLogs() {
+      // API 传 userId 和 date
       this.resData = [
         {
-          date: '2023/04/07',
-          log: {
-            list: [],
-            mark: ''
+          username: 'feifei',
+          list: [{
+            codeId: 1294,
+            detail: "添加的日志",
+            module: "需求设计",
+            time: 1,
+            title: "【中安星云】数据安全平台##V1.7.0功能开发"
           },
-          edit: false
+          {
+            codeId: 1299,
+            detail: "项目进度正常",
+            module: "功能开发",
+            time: 1,
+            title: "【中安星云】数据安全平台##V1.7.0功能开发"
+          }],
+          mark: "下午16点之后外出参加会议"
         },
         {
-          date: '2023/04/08',
-          log: {
-            list: [],
-            mark: ''
-          },
-          edit: true
+          username: '宋辉',
+          list: [],
+          mark: ""
         },
         {
-          date: '2023/04/09',
-          log: {
-            list: [],
-            mark: ''
-          },
-          edit: true
+          username: '嘟嘟',
+          list: [{
+            codeId: 1292,
+            detail: "需求与操作逻辑有冲突，需要重新确定在继续",
+            module: "需求设计",
+            time: 1,
+            title: "【中安星云】数据安全平台##V1.7.0功能开发"
+          }],
+          mark: ""
         },
         {
-          date: '2023/04/10',
-          log: {
-            list: [{
-              codeId: 1294,
-              detail: "4月10日添加的日志",
-              id: 1,
-              module: "需求设计",
-              time: 1,
-              title: "【中安星云】数据安全平台##V1.7.0功能开发"
-            },
-            {
-              codeId: 1299,
-              detail: "4月10日添加的日志",
-              id: 2,
-              module: "功能开发",
-              time: 1,
-              title: "【中安星云】数据安全平台##V1.7.0功能开发"
-            }],
-            mark: "下午16点之后外出参加会议",
+          username: '兰兰',
+          list: [{
+            codeId: 1391,
+            detail: "突然增加的紧急任务，今天加班完成了",
+            module: "需求设计",
+            time: 12,
+            title: "【中安星云】数据安全平台##V1.8.0需求设计"
           },
-          edit: true
+          {
+            codeId: 1299,
+            detail: "项目进度正常",
+            module: "需求设计",
+            time: 1,
+            title: "【中安星云】数据安全平台##V1.7.0功能开发"
+          },
+          {
+            codeId: 1294,
+            detail: "延期",
+            module: "需求设计",
+            time: 3,
+            title: "【中安星云】数据安全平台##V1.7.0功能开发"
+          }],
+          mark: "开了一天的会，下班后加班3小时完成的"
         },
         {
-          date: '2023/04/11',
-          log: {
-            list: [],
-            mark: ''
-          },
-          edit: true
+          username: 'Mia',
+          list: [],
+          mark: ""
         },
         {
-          date: '2023/04/12',
-          log: {
-            list: [],
-            mark: ''
-          },
-          edit: true
+          username: 'Amy',
+          list: [],
+          mark: ""
         },
         {
-          date: '2023/04/13',
-          log: {
-            list: [{
-              codeId: 1294,
-              detail: "4月13日添加的日志",
-              id: 3,
-              module: "需求设计",
-              time: 1,
-              title: "【中安星云】数据安全平台##V1.7.0功能开发"
-            },
-            {
-              codeId: 1299,
-              detail: "4月13日添加的日志",
-              id: 4,
-              module: "功能开发",
-              time: 1,
-              title: "【中安星云】数据安全平台##V1.7.0功能开发"
-            }],
-            mark: "下午16点之后外出参加会议",
-          },
-          edit: true
-        },
-        {
-          date: '2023/04/14',
-          log: {
-            list: [{
-              codeId: 9999,
-              detail: "4月14日添加的日志",
-              id: 5,
-              module: "需求设计",
-              time: 1,
-              title: "【中安星云】数据安全平台##V1.7.0功能开发"
-            },
-            {
-              codeId: 1299,
-              detail: "4月14日添加的日志",
-              id: 6,
-              module: "功能开发",
-              time: 1,
-              title: "【中安星云】数据安全平台##V1.7.0功能开发"
-            }],
-            mark: "下午16点之后外出参加会议"
-          },
-          edit: true
-        }]
-
-        const getLastItem = (arr) => {
-          return arr[arr.length - 1];
-        };
-
-        const lastObj = getLastItem(this.resData)
-
-        this.logList = lastObj ? lastObj.log.list : []
-        this.detail = lastObj ? lastObj.log.mark : ''
-        // console.log('logList:', this.logList)
-
+          username: '安迪',
+          list: [{
+            codeId: 1292,
+            detail: "项目正常，完成了【创建用户】和【创建小组】功能开发",
+            module: "功能开发",
+            time: 8,
+            title: "【中安星云】数据安全平台##V1.7.0功能开发"
+          }],
+          mark: ""
+        }
+      ]
     },
     // 切换日期，显示对应日期的日志
     getLogByDate(date) {
-      // 1. 传参日期
-      // 2. 根据日期调接口获得数据
-      //    - 一周内的日志可修改
-      //    - 超出一周的禁止修改
-      // console.log('日期：', this.date)
-      // this.logList = this.data.
+      if (date === this.$formatDate()) {
+        this.getHistoryLogs()
+      } else {
+        this.resData = []
+      }
 
-      // const currentDate = new Date();
-      // const currentMonth = currentDate.getMonth() + 1;
-      // const changeMonth = date.split('/')[1]
-      console.log('date:', date)
-      // console.log('date:', currentMonth, changeMonth)
-      // console.log(currentMonth === changeMonth)
-
-      // 先判断当前月份，然后获取该月份的所有日子
-      // if (currentMonth === changeMonth) { // 月份
-      // if (true) {
-        let myO = this.resData.find((obj) => {
-          let date1 = new Date(obj.date)
-          let date2 = new Date(date)
-          console.log(date1.getTime() === date2.getTime())
-          if (date1.getTime() === date2.getTime()) {
-            return obj
-          } else {
-            this.addBtnVisible = false
-            return null
-          }
-        });
-        this.logList = myO ? myO.log.list : []
-        this.detail = myO ? myO.log.mark : ''
-        console.log('logList:', this.logList)
-      // }
+      // let myO = this.resData.find((obj) => {
+      //   let date1 = new Date(obj.date)
+      //   let date2 = new Date(date)
+      //   if (date1.getTime() === date2.getTime()) {
+      //     return obj
+      //   } else {
+      //     this.addBtnVisible = false
+      //     return null
+      //   }
+      // });
+      // this.logList = myO ? myO.log.list : []
+      // this.detail = myO ? myO.log.mark : ''
 
     },
 
@@ -350,6 +267,8 @@ export default {
   background: rgb(246, 247, 247);
   .van-empty{
     background-color: #fff;
+  }
+  .empty2{
     margin-top: 10px;
   }
 }
