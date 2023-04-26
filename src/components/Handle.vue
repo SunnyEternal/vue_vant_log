@@ -71,6 +71,7 @@ export default {
       finish: false,
       username: '',
       date: this.$formatDate(),    // 默认日历显示当前日期，日历时间可修改
+      
       task: '',         // 选择任务
       showTaskPicker: false,
       rawTask: [],      // 任务原始数据
@@ -125,7 +126,6 @@ export default {
       const editData = JSON.parse(localStorage.getItem('editData'))
       if (this.isEdit) {
         this.task = `${editData.codeId}${editData.title}`
-        console.log(editData)
         this.type = editData.module
         this.time = editData.time
         this.detail = editData.detail
@@ -227,7 +227,6 @@ export default {
       this.formData.time = this.time
       this.formData.detail = this.detail
       
-      console.log('this.isEdit:', this.isEdit)
       if (!this.isEdit) {
         const data = _.cloneDeep(this.formData)
         let logList = localStorage.getItem('logList')
@@ -268,7 +267,7 @@ export default {
     },
 
     updateInfoById() {
-      console.log(this.task, ',', this.time, ',', this.detail)
+      console.log(this.task, ',', this.time, ',', this.detail, ',', this.type)
       
       const editData = JSON.parse(localStorage.getItem('editData'))
       const editId = editData.id
@@ -281,8 +280,8 @@ export default {
           item.task = this.task
           item.time = this.time
           item.detail = this.detail
+          item.module = this.type
           item.codeId = this.formData.codeId
-          item.module = this.formData.module
           item.title = this.formData.title
         }
         return item

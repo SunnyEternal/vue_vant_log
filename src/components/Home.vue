@@ -23,7 +23,7 @@
       <!-- 写好的日志 --> 
       <div class="completed-log" v-show="!noData">
         <van-swipe-cell class="handle-btns" :class="[item.id === editId && isEdit ? 'higlight' : '' ]" v-for="(item, i) in logList" :key="i">
-          <van-cell-group @click="editFun(item)">
+          <van-cell-group @click="editLogFun(item)">
             <div class="logBox">
               <div class="logTitle">
                 <h3>
@@ -40,7 +40,6 @@
           </van-cell-group>
           <template #right>
             <van-button square type="danger" text="删除" @click="deleteLogFun(item.id)" />
-            <!-- <van-button square type="info" text="编辑" @click="editLogFun(item)" /> -->
           </template>
         </van-swipe-cell>
       </div>
@@ -95,20 +94,8 @@ export default {
       maxDate: new Date(),
       showCalendar: false,
 
-      // task: '',         // 选择任务
-      // showTaskPicker: false,
-      // rawTask: [],      // 任务原始数据
-
-      // type: '',         // 选择类型            
-      // showTypePicker: false,
-      // typeSlots: [],    //? 类型原始数据
-
-      // time: 1,          // 选择用时
       value: 1,
 
-      active: 0,        // 底部选中导航
-
-      detail: '',       // 事物描述
       mark: '',
 
       formData: {       // 每一条日志
@@ -119,7 +106,6 @@ export default {
         time: 1,
         detail: ''
       },
-      numId: 0,         // 给写好的日志生成 id
 
       logList: [],      // 已写好的所有日志
       addBtnVisible: false,// 是否显示添加【事物按钮】
@@ -169,12 +155,7 @@ export default {
 
   },
   computed: {
-    // taskSlots() {
-    //   return this.addText(this.rawTask);
-    // },
-    // logList() {
-    //   return this.addLogObject(this.arr);
-    // }
+   
   },
   methods: {
     // 在日历上选择日期
@@ -271,12 +252,9 @@ export default {
       this.type = ''
       this.time = 1
     },
-
-    editFun(obj) {
+    // 编辑 点击每条「日志」进行
+    editLogFun(obj) {
       console.log('编辑对象：', obj)
-
-      // eventBus.$emit('event-editLog', obj)
-
       
       localStorage.setItem('editData', JSON.stringify(obj))
       this.$router.push({
@@ -285,40 +263,9 @@ export default {
           isEdit: true
         }
       })
-
-      // this.editId = obj.id
-      // this.isEdit = true
-
-      // this.task = `${obj.codeId}${obj.title}`
-      // this.type = obj.module
-      // this.time = obj.time
-      // this.detail = obj.detail
-      // this.formData.codeId = obj.codeId
-      // this.formData.title = obj.title
-      // console.log('this.formData:', this.formData)
-      
-      // this.addBtnVisible = false
-
     },
 
-    // 编辑 点击每条「日志」进行
-    editLogFun(obj) {
-      console.log('编辑对象：', obj)
-      this.editId = obj.id
-      // this.logList = this.logList.filter(item => item.id !== obj.id)
-      this.isEdit = true
-
-      this.task = `${obj.codeId}${obj.title}`
-      this.type = obj.module
-      this.time = obj.time
-      this.detail = obj.detail
-      this.formData.codeId = obj.codeId
-      this.formData.title = obj.title
-      console.log('this.formData:', this.formData)
-      
-      this.addBtnVisible = false
-
-    },
+    
     // editLogById() { // todo: 没有调用这个方法
     //   const target = this.logList.find(item => item.id === this.editId)
     //   console.log('logList:', this.logList)
@@ -333,22 +280,6 @@ export default {
     //   }
     //   console.log('logList:', this.logList)
     // },
-    updateInfoById() {
-      console.log(this.task, ',', this.time, ',', this.detail)
-      const id = this.editId
-      return this.logList.map(item => {
-        if (item.id === id) {
-          console.log('item:', item)
-          item.task = this.task
-          item.time = this.time
-          item.detail = this.detail
-          item.codeId = this.formData.codeId
-          item.module = this.formData.module
-          item.title = this.formData.title
-        }
-        return item
-      })
-    },
 
     // 删除 已写的日志
     deleteLogFun(id) {
@@ -356,7 +287,7 @@ export default {
         message: '确定删除吗？',
       }).then(() => {
         this.logList = this.logList.filter(item => item.id !== id)
-        localStorage.setItem('logList', this.logList)
+        localStorage.setItem('logList', JSON.stringify(this.logList))
       }).catch(() => {
         console.log('取消删除')
       });
