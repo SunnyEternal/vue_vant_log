@@ -6,7 +6,7 @@ import Main from '../components/Main.vue'
 
 import Home from '../components/Home.vue'
 import List from '../components/List.vue'
-import Handle from '../components/Handle.vue'
+// import Handle from '../components/Handle.vue'
 import Group from '../components/Group.vue'
 import AddTask from '../components/AddTask.vue'
 
@@ -24,16 +24,17 @@ Vue.use(VueRouter)
     children: [
       {
         path: '/home',
-        component: Home
+        component: Home,
+        // props: true
       },
       {
         path: '/list',
         component: List
       },
-      {
-        path: '/handle',
-        component: Handle
-      },
+      // {
+      //   path: '/handle',
+      //   component: Handle
+      // },
       {
         path: '/group',
         component: Group

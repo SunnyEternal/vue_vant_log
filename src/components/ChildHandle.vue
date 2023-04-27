@@ -54,7 +54,7 @@
       />
       <div class="btn-group">
         <van-button type="info" plain size="small" @click="saveLogFun">保 存</van-button>
-        <van-button color="#ef4f4f" plain size="small" @click="cancelLogFun">取 消</van-button>
+        <!-- <van-button color="#ef4f4f" plain size="small" @click="cancelLogFun">取 消</van-button> -->
       </div>
     </div>
 
@@ -63,8 +63,6 @@
 
 <script>
 import { Toast } from 'vant'
-// ComponentB.vue
-import { eventBus } from '../main.js'
 export default {
   data() {
     return{
@@ -109,11 +107,6 @@ export default {
 
     this.getTaskFun()
     this.getTypeFun()
-
-    // eventBus.$once('event-editLog', (obj) => {
-    //   this.editObj = obj
-    //   console.log('bian:', this.editObj)
-    // })
 
     this.isEdit = this.$route.query.isEdit ? this.$route.query.isEdit : false
 
@@ -256,7 +249,12 @@ export default {
         this.detail = ''
 
         localStorage.setItem('showSubmitBtn', true)
-        this.$router.push('/home')
+        
+        if (this.$route.path === '/home') {
+
+        } else {
+          this.$router.push('/home')
+        }
         
       } else {
        
@@ -266,6 +264,8 @@ export default {
       
       this.isEdit = false
       this.addBtnVisible = true
+
+      this.$emit('myClose', false)
 
     },
 

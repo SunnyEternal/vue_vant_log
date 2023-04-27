@@ -11,7 +11,7 @@
           clickable
           name="calendar"
           :value="date"
-          label="日历"
+          label=""
           @click="showCalendar = true"
         />
       </div>
@@ -31,7 +31,7 @@
                   <span class="code">{{item.codeId}}</span> 
                   {{item.title}}
                 </h3>
-                <span class="evaluate">{{item.module}}</span>
+                <span class="evaluate">{{item.type}}</span>
               </div>
               <div class="logDetail">
                 <p>{{item.detail}}</p>
@@ -96,15 +96,26 @@
       </div>
     </div>
 
+    <button @click="sentMain">发给 Main 组件</button>
+
   </div>
 </template>
 
 <script>
 import { Toast, Dialog } from 'vant';
 import _ from 'lodash';
-import { eventBus } from '../main.js'
 
 export default {
+  props: {
+    isEdit: {
+      type: Boolean,
+      required: true
+    },
+    addData: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     return {
       finish: false,
@@ -125,7 +136,7 @@ export default {
         month: 1,
         sevenDayLog: []
       },
-      isEdit: false,
+      // isEdit: false,
       editId: 0,
 
       noData: false,
@@ -163,7 +174,71 @@ export default {
     this.getSevenDayDate()
 
   },
+  watch: {
+    // isEdit: function(val) {
+    //   console.log(val);   // 接收父组件的值
+    //   // 编辑 log
+    //   if (val) {
+    //     this.updateInfoById()
+    //   }
+    // },
+    addData: {
+      handler(newVal, oldVal) {
+        console.log('addData changed!', newVal);
+        console.log('isEdit:', this.isEdit)
+        if (this.isEdit) {
+          this.updateInfoById(this.addData)
+        } else {
+          // 添加 log
+          let storeData = localStorage.getItem('logList') ? JSON.parse(localStorage.getItem('logList')) : []
+          storeData.push(newVal)
+          storeData = this.setId(storeData)
+          localStorage.setItem('logList', JSON.stringify(storeData))
+
+          this.logList = storeData
+        }
+        
+      },
+      deep: true
+    },
+  },
   methods: {
+    sentMain() {
+      this.$emit('getMessage', "传值给父组件")
+    },
+    updateInfoById(obj) {
+      
+      const editData = JSON.parse(localStorage.getItem('editData'))
+      const editId = editData.id
+      let logList = JSON.parse(localStorage.getItem('logList'))
+
+      let temp = []
+
+      temp = logList.map(item => {
+        if (item.id === editId) {
+          item.time = obj.time
+          item.detail = obj.detail
+          item.type = obj.type
+          item.codeId = obj.codeId
+          item.title = obj.title
+        }
+        return item
+      })
+      localStorage.setItem('showSubmitBtn', true)
+      localStorage.setItem('logList', JSON.stringify(temp))
+      this.logList = temp
+    },
+
+    // 工具 为数组中每个对象添加 id
+    setId(arr) {
+      return arr = arr.map((item, index) => {
+        return {
+          ...item,
+          id: index + 1
+        }
+      })
+    },
+
     // 在日历上选择日期
     onConfirmDate(date) {
       this.date = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
@@ -182,7 +257,7 @@ export default {
     formatter(day) {
       const month = day.date.getMonth() + 1;
       const date = day.date.getDate();
-      console.log('month:', month)
+      // console.log('month:', month)
 
       if(this.weekLogs.month === month) {
         this.weekLogs.sevenDayLog.forEach((item) => {
@@ -257,15 +332,21 @@ export default {
     },
     // 编辑 点击每条「日志」进行
     editLogFun(obj) {
-      console.log('编辑对象：', obj)
-      
+      // console.log('编辑对象：', obj)
       localStorage.setItem('editData', JSON.stringify(obj))
-      this.$router.push({
-        path: '/handle',
-        query: {
-          isEdit: true
-        }
-      })
+      console.log('feifei',JSON.stringify(obj))
+      this.$emit('editLog', obj)
+      // this.$emit('closeAction', false)
+      
+      
+
+
+      // this.$router.push({
+      //   path: '/handle',
+      //   query: {
+      //     isEdit: true
+      //   }
+      // })
     },
     
     // editLogById() { // todo: 没有调用这个方法
@@ -285,6 +366,7 @@ export default {
 
     // 删除 已写的日志
     deleteLogFun(id) {
+      // console.log('删除id：', id)
       Dialog.confirm({
         message: '确定删除吗？',
       }).then(() => {
@@ -344,6 +426,9 @@ export default {
 .flex-cont{
   display: flex;
   justify-content: space-between;
+  .van-field__control{
+    text-align: right!important;
+  }
 }
 .flex-time{
   display: flex;
