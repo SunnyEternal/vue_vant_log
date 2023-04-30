@@ -87,7 +87,7 @@
     <!-- 7天内日志提交情况 -->
     <div class="tag-group">
       <div style="display: inline-block;" v-for="(tagObj, k) in weekLogs.sevenDayLog" :key="k">
-        <van-tag v-if="!tagObj.todo" type="warning" round size="large">
+        <van-tag v-if="!tagObj.todo" type="warning" round size="large" @click="quickDate(tagObj.day)">
           {{tagObj.day}}日{{tagObj.text}}
         </van-tag>
          <van-tag v-else type="success" round size="large">
@@ -96,7 +96,7 @@
       </div>
     </div>
 
-    <button @click="sentMain">发给 Main 组件</button>
+    <!-- <button @click="sentMain">发给 Main 组件</button> -->
 
   </div>
 </template>
@@ -242,22 +242,18 @@ export default {
     // 在日历上选择日期
     onConfirmDate(date) {
       this.date = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
-      const currDay = Number(this.date.split('/')[2])
-      // console.log(currDay) // ! 注意字符串 和 数字 间的转换
+      // const currDay = Number(this.date.split('/')[2])
+      // console.log(currDay, this.date) // ! 注意字符串 和 数字 间的转换
 
-      const foundArr =  this.weekLogs.sevenDayLog.filter((obj) => obj.day === currDay);
-      this.finish = foundArr.length != 0 ? foundArr[0].todo : false
-      // console.log(this.weekLogs.sevenDayLog)
-      // console.log('foundArr:', foundArr)
-      // console.log(this.finish, 'currDay:', currDay)
+      // const foundArr =  this.weekLogs.sevenDayLog.filter((obj) => obj.day === currDay);
+      // this.finish = foundArr.length != 0 ? foundArr[0].todo : false
       
       this.showCalendar = false;
     },
     // 在日期上显示日志提交情况 // ! html 里没有传 day，但是方法里怎么可以用呢？
     formatter(day) {
       const month = day.date.getMonth() + 1;
-      const date = day.date.getDate();
-      // console.log('month:', month)
+      const date = `${day.date.getFullYear()}/${day.date.getMonth() + 1}/${day.date.getDate()}`;
 
       if(this.weekLogs.month === month) {
         this.weekLogs.sevenDayLog.forEach((item) => {
@@ -277,36 +273,36 @@ export default {
       this.weekLogs = {
         month: 4,
         sevenDayLog: [{
-          day: 26,
+          day: "2023/4/26",
           todo: false,
           text: '未提交'
         },{
-          day: 25,
+          day: "2023/4/25",
           todo: false,
           text: '未提交'
         },
         {
-          day: 24,
+          day: "2023/4/24",
           todo: false,
           text: '未提交'
         },
         {
-          day: 23,
+          day: "2023/4/23",
           todo: true,
           text: '完成'
         },
         {
-          day: 22,
+          day: "2023/4/22",
           todo: false,
           text: '未提交'
         },
         {
-          day: 21,
+          day: "2023/4/21",
           todo: true,
           text: '完成'
         },
         {
-          day: 20,
+          day: "2023/4/20",
           todo: true,
           text: '完成'
         }]
@@ -398,6 +394,12 @@ export default {
       }).catch(() => {
         console.log('取消提交')
       });
+    },
+    // 点击7天内未提交日志的 tag 标签，快速选择日期并进入编写 日志 的页面
+    quickDate(day) {
+      this.date = day
+      const obj = {'date': this.date, 'show': true}
+      this.$emit('showAddLog', obj)
     }
   }
 }

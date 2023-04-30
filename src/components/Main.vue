@@ -9,7 +9,7 @@
     </van-nav-bar>
 
     <!-- 中间 - 内容区 -->
-    <router-view :addData="addData" :isEdit="isEdit" @editLog="getEditData" ></router-view>
+    <router-view :addData="addData" :isEdit="isEdit" @editLog="getEditData" @showAddLog="showDialog"></router-view>
 
     <!-- 底部 - 导航 -->
     <div class="my-tabbar">
@@ -30,6 +30,13 @@
     <!-- 动作区域：添加log，编辑log -->
     <van-action-sheet v-model="showAction" cancel-text="取消" @cancel="onCancel">
       <div class="handle-main">
+        <van-field
+          readonly
+          name="calendar"
+          :value="date"
+          label="日期"
+          @click="showCalendar = true"
+        />
         <van-field
           readonly
           clickable
@@ -135,6 +142,8 @@ export default {
       isEdit: false,
 
       addData: {},      // Main 组件向子组件 Home 传递【新写的log】
+
+      showCalendar: true,
     }
   },
   computed: {
@@ -170,6 +179,13 @@ export default {
       this.title = val.title
 
       localStorage.setItem('editData', JSON.stringify(val))
+    },
+    // 点击完 quickDate() 显示添加日志页面
+    showDialog(val) {
+      console.log('val:', val)
+      this.showAction = val.show
+      this.date = val.date
+
     },
 
     // 退出
@@ -379,7 +395,8 @@ export default {
           id: index + 1
         }
       })
-    }
+    },
+    
   }
 }
 </script>
