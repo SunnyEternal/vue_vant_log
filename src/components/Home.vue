@@ -443,7 +443,10 @@ export default {
   width: 90px!important;
 }
 .handle-main{
-  margin: 10px 0;
+  padding: 10px 0;
+  box-sizing: border-box;
+  height: 100%;
+  position: relative;
 }
 .btn-group{
   padding: 20px 40px;

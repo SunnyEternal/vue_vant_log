@@ -16,7 +16,8 @@
       <van-tabbar route :placeholder="true" :safe-area-inset-bottom="true">
         <van-tabbar-item icon="records" to="/home">记录</van-tabbar-item>
         <van-tabbar-item icon="completed" to="/list">日志列表</van-tabbar-item>
-        <van-tabbar-item icon="plus" class="my-icon" @click="addLog"></van-tabbar-item>
+        <van-tabbar-item icon="add" class="my-icon" @click="addLog"></van-tabbar-item>
+        <!-- <van-icon name="add" /> -->
         <van-tabbar-item icon="friends-o" to="/group">分组</van-tabbar-item>
         <van-tabbar-item icon="setting-o" to="/addTask">创建任务</van-tabbar-item>
       </van-tabbar>
@@ -88,9 +89,11 @@
           type="textarea"
           placeholder="请填写事物描述"
         />
-        <div class="btn-group">
+        <!-- <div class="btn-group">
           <van-button type="info" plain size="small" @click="saveLogFun">保 存</van-button>
-          <!-- <van-button color="#ef4f4f" plain size="small" @click="cancelLogFun">取 消</van-button> -->
+        </div> -->
+        <div class="fix-bottom">
+          <van-button block plain type="info" native-type="submit">保存</van-button>
         </div>
       </div>
     </van-action-sheet>
@@ -402,7 +405,7 @@ export default {
 </script>
 
 <style lang="less">
-.my-icon .van-icon-plus{
+.my-icon .van-icon-add{
   font-size: 32px;
   top: -12px;
   border-radius: 50%;
@@ -410,6 +413,10 @@ export default {
   padding: 4px;
   background-color: #fff;
   z-index: 10;
+}
+.my-icon .van-icon-add:before {
+    content: '\e65d';
+    color: #1989fa;
 }
 .main-container{
   .van-action-sheet{
@@ -419,5 +426,12 @@ export default {
   .van-popup--bottom.van-popup--round {
     border-radius: 4px 4px 0 0;
   }
-} 
+}
+.fix-bottom{
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+}
 </style>
