@@ -5,13 +5,30 @@
     <!-- 展示区 -->
     <div class="handler-field">
       <div class="flex-cont">
-        <van-field readonly :label="username" :border="false" />
+        <!-- <van-field readonly :label="username" :border="false" /> -->
+        <van-field
+          readonly
+          clickable
+          label="小组"
+          :value="team"
+          placeholder="选择小组"
+          @click="showTeamPicker = true"
+        />
+        <van-popup v-model="showTeamPicker" round position="bottom">
+          <van-picker
+            show-toolbar
+            :columns="teamSlots"
+            @cancel="showTeamPicker = false"
+            @confirm="onConfirmTeam"
+          />
+        </van-popup>
+
         <van-field
           readonly
           clickable
           name="calendar"
           :value="date"
-          label="日历"
+          label=""
           @click="showCalendar = true"
         />
       </div>
@@ -86,7 +103,17 @@ export default {
 
       resData: [],           // 历史日志数据
 
+      rawTeam: [],           // 小组列表原始数据
+      team: '',              // 选中的小组
+      showTeamPicker: false, // 显示展示小组的弹窗
+
+
     };
+  },
+  computed: {
+    teamSlots() {
+      return this.addText(this.rawTeam);
+    },
   },
   created() {
     this.username = localStorage.getItem('username')
@@ -102,13 +129,19 @@ export default {
     
     
     // console.log(this.logList)
-
+    this.getTeamData()
     this.getHistoryLogs()
   },
   methods: {
     // 退出
     onClickRight() {
       Toast('退出');
+    },
+    // 选择小组
+    onConfirmTeam(value) {
+      console.log(value)
+      this.team = value.text;
+      this.showTeamPicker = false;
     },
     // 在日历上选择日期
     onConfirmDate(date) {
@@ -239,6 +272,30 @@ export default {
       })
     },
 
+    // 获取小组列表数据
+    getTeamData() {
+      this.rawTeam = [{
+        id: 1,
+        groupName: '星云组'
+      },
+      {
+        id: 2,
+        groupName: '梦想组'
+      },
+      {
+        id: 3,
+        groupName: '雪糕组'
+      }
+      ]
+    },
+    // 给 rawTeam 数组数据添加【text】属性，用于 vant ui 绘制弹出选择列表
+    addText(arr) {
+      arr.forEach(function(obj) {
+        obj.text = obj.groupName;
+      });
+      return arr;
+    },
+
     // 校验，查看的日期没有写日志，但超过7天了，不能在添加，也就是没有【添加事物】按钮
     // 如果是当前月份，那日期比今天小 6 天（包含6）的，显示【添加事物】按钮
     // 如果是前一个月份
@@ -289,15 +346,15 @@ export default {
 //   color: #323233!important;
 // } //!不生效
 
-.btn-group{
-  padding: 20px 40px;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: space-around;
-  background-color: #fff;
-}
 
 .my-tabbar .van-tabbar__placeholder {
   background-color: #fff;
+}
+
+.flex-cont > div:last-child{
+  width: 50%;
+  .van-field__control{
+    text-align: right!important;
+  }
 }
 </style>

@@ -428,9 +428,9 @@ export default {
 .flex-cont{
   display: flex;
   justify-content: space-between;
-  .van-field__control{
-    text-align: right!important;
-  }
+  // .van-field__control{
+  //   text-align: right!important;
+  // }
 }
 .flex-time{
   display: flex;
